@@ -36,10 +36,10 @@ function StatBar({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-        <span className={cn("font-black text-sm", winner === 'A' ? colorA : "text-zinc-200")}>{valueA}{unitA}</span>
-        <span className="flex items-center gap-1 text-zinc-500">{icon}{label}</span>
-        <span className={cn("font-black text-sm", winner === 'B' ? colorB : "text-zinc-200")}>{valueB}{unitB}</span>
+      <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+        <span className={cn("font-black text-sm", winner === 'A' ? colorA : "text-foreground")}>{valueA}{unitA}</span>
+        <span className="flex items-center gap-1 text-muted-foreground">{icon}{label}</span>
+        <span className={cn("font-black text-sm", winner === 'B' ? colorB : "text-foreground")}>{valueB}{unitB}</span>
       </div>
       <div className="flex items-center gap-1 h-2">
         {/* Left bar (A) — fills right to left */}
@@ -98,7 +98,7 @@ function MPSelector({
   return (
     <div className={cn(
       "flex-1 rounded-2xl border-2 p-5 space-y-4 relative transition-all",
-      selected ? `border-opacity-60 bg-zinc-950/60` : "border-zinc-800 bg-zinc-950/30 border-dashed"
+      selected ? `border-opacity-60 bg-background/60` : "border-zinc-800 bg-background/30 border-dashed"
     )} style={{ borderColor: selected ? color : undefined }} ref={ref}>
 
       {/* Slot label */}
@@ -106,7 +106,7 @@ function MPSelector({
         <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: color }}>
           {slot}
         </div>
-        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
           {slot === 'A' ? 'Challenger' : 'Opponent'}
         </span>
       </div>
@@ -119,8 +119,8 @@ function MPSelector({
               <img src={selected.image_url} alt={selected.name} className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="font-black text-zinc-100 text-sm leading-tight">{selected.name}</p>
-              <p className="text-[10px] text-zinc-500 mt-0.5">{selected.constituency}</p>
+              <p className="font-black text-foreground text-sm leading-tight">{selected.name}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{selected.constituency}</p>
               <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block" style={{ background: `${color}20`, color, border: `1px solid ${color}40` }}>
                 {selected.party}
               </span>
@@ -134,9 +134,9 @@ function MPSelector({
               { label: 'Attend', val: `${selected.attendance_rate}%` },
               { label: 'Q&A', val: selected.questions_count },
             ].map(s => (
-              <div key={s.label} className="bg-zinc-900/60 rounded-lg p-2 text-center">
-                <p className="text-sm font-black text-zinc-100">{s.val}</p>
-                <p className="text-[9px] text-zinc-500 font-semibold uppercase">{s.label}</p>
+              <div key={s.label} className="bg-muted rounded-lg p-2 text-center">
+                <p className="text-sm font-black text-foreground">{s.val}</p>
+                <p className="text-[9px] text-muted-foreground font-semibold uppercase">{s.label}</p>
               </div>
             ))}
           </div>
@@ -144,14 +144,14 @@ function MPSelector({
       ) : (
         <div className="text-center py-4">
           <Swords className="h-8 w-8 text-zinc-700 mx-auto mb-2" />
-          <p className="text-xs text-zinc-500">Select an MP to battle</p>
+          <p className="text-xs text-muted-foreground">Select an MP to battle</p>
         </div>
       )}
 
       {/* Dropdown trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-zinc-800 bg-zinc-900/60 text-xs text-zinc-400 hover:border-zinc-600 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-zinc-800 bg-muted text-xs text-muted-foreground hover:border-zinc-600 transition-colors"
       >
         <span>{selected ? 'Change MP' : 'Choose MP'}</span>
         <ChevronDown className="h-3.5 w-3.5" />
@@ -159,17 +159,17 @@ function MPSelector({
 
       {/* Dropdown panel */}
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
-          <div className="p-2 border-b border-zinc-900">
+        <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-background border border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
+          <div className="p-2 border-b border-border">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-zinc-500" />
+              <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
               <input
                 autoFocus
                 type="text"
                 placeholder="Search MP, party, constituency..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-1.5 pl-8 pr-3 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-1.5 pl-8 pr-3 text-xs text-foreground placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
               />
             </div>
           </div>
@@ -182,14 +182,14 @@ function MPSelector({
               >
                 <img src={m.image_url} alt={m.name} className="w-6 h-6 rounded-full object-cover shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-zinc-200 truncate">{m.name}</p>
-                  <p className="text-[10px] text-zinc-500 truncate">{m.party} · {m.state}</p>
+                  <p className="text-xs font-semibold text-foreground truncate">{m.name}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{m.party} · {m.state}</p>
                 </div>
-                <span className="text-[10px] font-bold text-zinc-400 shrink-0">{m.overall_score}pts</span>
+                <span className="text-[10px] font-bold text-muted-foreground shrink-0">{m.overall_score}pts</span>
               </button>
             ))}
             {filtered.length === 0 && (
-              <p className="text-xs text-zinc-600 text-center py-4">No MPs found</p>
+              <p className="text-xs text-muted-foreground text-center py-4">No MPs found</p>
             )}
           </div>
         </div>
@@ -238,22 +238,22 @@ function WinnerBanner({ mpA, mpB }: { mpA: MP; mpB: MP }) {
         <div className="relative z-10 space-y-2">
           <div className="text-4xl">🤝</div>
           <p className="text-xl font-black text-amber-400">IT'S A TIE!</p>
-          <p className="text-xs text-zinc-500">Both MPs are perfectly matched across all metrics</p>
+          <p className="text-xs text-muted-foreground">Both MPs are perfectly matched across all metrics</p>
         </div>
       ) : (
         <div className="relative z-10 space-y-3">
           <Trophy className="h-8 w-8 text-yellow-400 mx-auto" />
-          <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Winner</p>
+          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Winner</p>
           <div className="flex items-center justify-center gap-3">
             <img src={winner!.image_url} alt={winner!.name} className="w-12 h-12 rounded-full border-2 border-yellow-400" />
             <div className="text-left">
-              <p className="text-lg font-black text-zinc-100">{winner!.name}</p>
-              <p className="text-xs text-zinc-500">{winner!.constituency} · {winner!.party}</p>
+              <p className="text-lg font-black text-foreground">{winner!.name}</p>
+              <p className="text-xs text-muted-foreground">{winner!.constituency} · {winner!.party}</p>
             </div>
           </div>
           <div className="flex items-center justify-center gap-6 text-sm">
             <span className="text-indigo-400 font-black">{winsA} wins</span>
-            <span className="text-zinc-600">vs</span>
+            <span className="text-muted-foreground">vs</span>
             <span className="text-rose-400 font-black">{winsB} wins</span>
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function ComparePage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[500px]">
         <div className="w-12 h-12 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
-        <span className="mt-4 text-sm text-zinc-400 font-medium">Loading battle arena...</span>
+        <span className="mt-4 text-sm text-muted-foreground font-medium">Loading battle arena...</span>
       </div>
     );
   }
@@ -306,10 +306,10 @@ export default function ComparePage() {
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
           <Swords className="h-7 w-7 text-indigo-400" />
-          <h1 className="text-3xl font-black tracking-tight text-zinc-100">MP Battle Arena</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">MP Battle Arena</h1>
           <Swords className="h-7 w-7 text-rose-400 scale-x-[-1]" />
         </div>
-        <p className="text-zinc-500 text-sm">Pick two MPs. See who wins across every metric. May the best parliamentarian win.</p>
+        <p className="text-muted-foreground text-sm">Pick two MPs. See who wins across every metric. May the best parliamentarian win.</p>
       </div>
 
       {/* VS Selector */}
@@ -319,7 +319,7 @@ export default function ComparePage() {
         {/* VS Badge */}
         <div className="flex items-center justify-center md:flex-col shrink-0">
           <div className="w-12 h-12 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center">
-            <span className="text-sm font-black text-zinc-300">VS</span>
+            <span className="text-sm font-black text-foreground">VS</span>
           </div>
         </div>
 
@@ -333,15 +333,15 @@ export default function ComparePage() {
           <WinnerBanner mpA={mpA} mpB={mpB} />
 
           {/* Stat bars */}
-          <div className="bg-zinc-900/20 border border-zinc-900 rounded-2xl p-6 space-y-6">
+          <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-indigo-400" />
-                <span className="text-xs font-bold text-zinc-300 truncate max-w-[120px]">{mpA.name}</span>
+                <span className="text-xs font-bold text-foreground truncate max-w-[120px]">{mpA.name}</span>
               </div>
-              <h2 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Head to Head</h2>
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Head to Head</h2>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-zinc-300 truncate max-w-[120px] text-right">{mpB.name}</span>
+                <span className="text-xs font-bold text-foreground truncate max-w-[120px] text-right">{mpB.name}</span>
                 <div className="w-2 h-2 rounded-full bg-rose-400" />
               </div>
             </div>
@@ -369,16 +369,16 @@ export default function ComparePage() {
           {mpA.top_topics && mpB.top_topics && (
             <div className="grid grid-cols-2 gap-4">
               {[{ mp: mpA, color: COLOR_A, label: 'Challenger Focus' }, { mp: mpB, color: COLOR_B, label: 'Opponent Focus' }].map(({ mp, color, label }) => (
-                <div key={mp.id} className="bg-zinc-900/20 border border-zinc-900 rounded-xl p-4 space-y-3">
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{label}</p>
-                  <p className="text-sm font-black text-zinc-100">{mp.name}</p>
+                <div key={mp.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{label}</p>
+                  <p className="text-sm font-black text-foreground">{mp.name}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {mp.top_topics.map(t => (
                       <span key={t} className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ background: `${color}15`, color, border: `1px solid ${color}30` }}>
                         {t}
                       </span>
                     ))}
-                    {mp.top_topics.length === 0 && <span className="text-[10px] text-zinc-600">No focus data</span>}
+                    {mp.top_topics.length === 0 && <span className="text-[10px] text-muted-foreground">No focus data</span>}
                   </div>
                 </div>
               ))}
@@ -403,7 +403,7 @@ export default function ComparePage() {
       )}
 
       {(!mpA || !mpB) && (
-        <div className="text-center py-16 text-zinc-600">
+        <div className="text-center py-16 text-muted-foreground">
           <Swords className="h-12 w-12 mx-auto mb-3 opacity-30" />
           <p className="text-sm">Select two MPs above to start the battle</p>
         </div>

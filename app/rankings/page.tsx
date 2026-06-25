@@ -58,7 +58,7 @@ export default function RankingsPage() {
       case 'SNP': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400';
       case 'Liberal Democrat': return 'bg-orange-500/10 border-orange-500/20 text-orange-400';
       case 'Green': return 'bg-green-500/10 border-green-500/20 text-green-400';
-      default: return 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400';
+      default: return 'bg-zinc-500/10 border-zinc-500/20 text-muted-foreground';
     }
   };
 
@@ -67,11 +67,11 @@ export default function RankingsPage() {
       case 1:
         return 'bg-yellow-500/15 border-yellow-500/30 text-yellow-400 shadow-[0_0_12px_rgba(234,179,8,0.15)] font-black scale-105';
       case 2:
-        return 'bg-zinc-300/15 border-zinc-300/30 text-zinc-300 font-extrabold';
+        return 'bg-zinc-300/15 border-zinc-300/30 text-foreground font-extrabold';
       case 3:
         return 'bg-amber-600/15 border-amber-600/30 text-amber-500 font-bold';
       default:
-        return 'bg-zinc-950 border-zinc-900 text-zinc-500 font-medium';
+        return 'bg-card border-border text-muted-foreground font-medium';
     }
   };
 
@@ -81,17 +81,17 @@ export default function RankingsPage() {
     <div className="space-y-8 max-w-7xl mx-auto w-full">
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
           <Trophy className="h-7 w-7 text-indigo-400" />
           <span>Performance Rankings</span>
         </h1>
-        <p className="text-zinc-400 text-sm">
+        <p className="text-muted-foreground text-sm">
           National legislative leaderboard parsed by activity density, voting attendance, bills sponsored, and questions.
         </p>
       </div>
 
       {/* Metric Selector Tabs */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-zinc-900/40 border border-zinc-900 rounded-xl max-w-fit backdrop-blur-md">
+      <div className="flex flex-wrap gap-2 p-1.5 bg-muted border border-border rounded-xl max-w-fit backdrop-blur-md">
         {metrics.map(metric => {
           const Icon = metric.icon;
           const isActive = activeMetric === metric.id;
@@ -102,11 +102,11 @@ export default function RankingsPage() {
               className={cn(
                 "px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 border border-transparent",
                 isActive 
-                  ? "bg-zinc-950 text-indigo-400 border-zinc-850/80 shadow-md" 
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-950/20"
+                  ? "bg-card text-indigo-400 border-border/80 shadow-md" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/20"
               )}
             >
-              <Icon className={cn("h-3.5 w-3.5", isActive ? metric.color : "text-zinc-500")} />
+              <Icon className={cn("h-3.5 w-3.5", isActive ? metric.color : "text-muted-foreground")} />
               <span>{metric.label}</span>
             </button>
           );
@@ -114,18 +114,18 @@ export default function RankingsPage() {
       </div>
 
       {/* Leaderboard Table Content */}
-      <div className="bg-zinc-900/20 border border-zinc-900 rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
         {loading ? (
           <div className="py-32 flex flex-col items-center justify-center">
             <div className="w-10 h-10 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
-            <span className="mt-3 text-xs text-zinc-500">Calculating standings...</span>
+            <span className="mt-3 text-xs text-muted-foreground">Calculating standings...</span>
           </div>
         ) : mps.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse -w-[650pminx]"
 >
               <thead>
-                <tr className="border-b border-zinc-900 text-[10px] font-bold text-zinc-500 uppercase tracking-wider bg-zinc-950/30">
+                <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-card/30">
                   <th className="py-4 px-6 text-center w-16">Rank</th>
                   <th className="py-4 px-4">Member Profile</th>
                   <th className="py-4 px-4">Constituency</th>
@@ -134,7 +134,7 @@ export default function RankingsPage() {
                   <th className="py-4 px-6 text-right w-44">{currentMetricInfo.label}</th>
                 </tr>
               </thead>
-              <tbody className="text-xs text-zinc-300 divide-y divide-zinc-900/50">
+              <tbody className="text-xs text-foreground divide-y divide-zinc-900/50">
                 {mps.map((mp, index) => {
                   const rank = index + 1;
                   const metricValue = mp[activeMetric as keyof MP] as string | number | null | undefined;
@@ -143,8 +143,8 @@ export default function RankingsPage() {
                     <tr 
                       key={mp.id} 
                       className={cn(
-                        "hover:bg-zinc-900/50 transition-colors group",
-                        rank <= 3 ? "bg-zinc-950/10" : ""
+                        "hover:bg-muted/50 transition-colors group",
+                        rank <= 3 ? "bg-card/10" : ""
                       )}
                     >
                       {/* Rank Column */}
@@ -163,14 +163,14 @@ export default function RankingsPage() {
                           href={`/mps/${mp.id}`} 
                           className="flex items-center gap-3 group-hover:text-indigo-400 transition-colors max-w-fit"
                         >
-                          <div className="w-9 h-9 rounded-full overflow-hidden border border-zinc-800 shrink-0">
+                          <div className="w-9 h-9 rounded-full overflow-hidden border border-border shrink-0">
                             <img src={mp.image_url} alt={mp.name} className="w-full h-full object-cover" />
                           </div>
                           <div>
-                            <span className="font-bold text-zinc-200 group-hover:text-indigo-400 transition-colors block">
+                            <span className="font-bold text-foreground group-hover:text-indigo-400 transition-colors block">
                               {mp.name}
                             </span>
-                            <span className="text-[10px] text-zinc-500">
+                            <span className="text-[10px] text-muted-foreground">
                               Office: {mp.active_term_years ?? '2024 – Present'}
                             </span>
                           </div>
@@ -179,8 +179,8 @@ export default function RankingsPage() {
 
                       {/* Constituency */}
                       <td className="py-4 px-4">
-                        <span className="font-medium text-zinc-300">{mp.constituency}</span>
-                        <span className="text-[10px] text-zinc-500 block">{mp.region}</span>
+                        <span className="font-medium text-foreground">{mp.constituency}</span>
+                        <span className="text-[10px] text-muted-foreground block">{mp.region}</span>
                       </td>
 
                       {/* Party */}
@@ -192,7 +192,7 @@ export default function RankingsPage() {
 
                       {/* Aggregate score */}
                       <td className="py-4 px-4 text-center">
-                        <span className="font-bold text-zinc-400 bg-zinc-900/40 border border-zinc-850 px-2 py-0.5 rounded">
+                        <span className="font-bold text-foreground bg-muted border border-border px-2 py-0.5 rounded">
                           {mp.overall_score} pts
                         </span>
                       </td>
@@ -200,12 +200,12 @@ export default function RankingsPage() {
                       {/* Sorted metric value column */}
                       <td className="py-4 px-6 text-right">
                         <div className="flex items-center justify-end gap-2.5">
-                          <span className={cn("font-extrabold text-sm", rank <= 3 ? "text-indigo-300" : "text-zinc-200")}>
+                          <span className={cn("font-extrabold text-sm", rank <= 3 ? "text-indigo-300" : "text-foreground")}>
                            {metricValue ?? '—'}{currentMetricInfo.unit}
                           </span>
                           <Link 
                             href={`/mps/${mp.id}`}
-                            className="p-1 rounded bg-zinc-900/60 border border-zinc-850 opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-indigo-400 transition-all shadow-sm"
+                            className="p-1 rounded bg-muted border border-border opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-indigo-400 transition-all shadow-sm"
                           >
                             <ArrowUpRight className="h-3.5 w-3.5" />
                           </Link>
@@ -218,18 +218,18 @@ export default function RankingsPage() {
             </table>
           </div>
         ) : (
-          <div className="py-16 text-center text-zinc-500 text-xs font-medium">No standings data available</div>
+          <div className="py-16 text-center text-muted-foreground text-xs font-medium">No standings data available</div>
         )}
       </div>
 
       {/* Info Card */}
-      <div className="rounded-xl border border-zinc-900 bg-zinc-950 p-6 flex flex-col sm:flex-row items-center gap-6">
+      <div className="rounded-xl border border-border bg-card p-6 flex flex-col sm:flex-row items-center gap-6">
         <div className="w-12 h-12 rounded-xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
           <Sparkles className="h-6 w-6" />
         </div>
         <div className="space-y-1 text-center sm:text-left flex-1">
-          <h4 className="text-sm font-bold text-zinc-200">How is rank determined?</h4>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <h4 className="text-sm font-bold text-foreground">How is rank determined?</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Standings are computed in real-time based on the sorted values of the active filter metric. In cases of identical scores, members share the higher rank index position. Ranks represent activity volumes, not policy outcomes.
           </p>
         </div>

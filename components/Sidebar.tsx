@@ -97,12 +97,21 @@ export default function Sidebar({ className }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar Container */}
-      <aside className={cn(
-        "fixed lg:static inset-y-0 left-0 z-45 w-64 bg-zinc-950 border-r border-zinc-900 flex flex-col h-full transition-transform duration-300 transform lg:transform-none",
-        isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-        className
-      )}>
+  <aside
+  className={cn(
+    `fixed lg:static inset-y-0 left-0 z-45 w-64
+     bg-background
+     border-r border-border
+     text-foreground
+     flex flex-col h-full
+     transition-transform duration-300
+     transform lg:transform-none`,
+    isMobileOpen
+      ? "translate-x-0"
+      : "-translate-x-full lg:translate-x-0",
+    className
+  )}
+>
         {/* Logo Area */}
         <div className="h-16 flex items-center px-6 border-b border-zinc-900 gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 relative overflow-hidden">

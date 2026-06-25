@@ -21,27 +21,27 @@ export default function ThemeToggle() {
       }
       className="
         fixed
-        top-6
-        right-6
-        z-50
+        top-4
+        right-4
+        z-[9999]
         h-12
         w-12
-        rounded-xl
+        rounded-full
         border
-        border-zinc-700
-        bg-zinc-900/80
-        backdrop-blur
+        border-zinc-300
+        dark:border-zinc-700
+        bg-white
+        dark:bg-zinc-900
+        shadow-lg
         flex
         items-center
         justify-center
-        hover:scale-105
-        transition-all
       "
     >
       {theme === "dark" ? (
-        <Sun className="h-5 w-5 text-yellow-400" />
+        <Sun className="h-5 w-5 text-yellow-500" />
       ) : (
-        <Moon className="h-5 w-5 text-indigo-600" />
+        <Moon className="h-5 w-5 text-zinc-700" />
       )}
     </button>
   );
