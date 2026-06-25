@@ -95,7 +95,7 @@ export default function ArenaPage() {
       {/* MP OF THE WEEK */}
 
       {mpOfWeek && (
-        <section className="rounded-3xl border border-yellow-500/40 bg-gradient-to-r from-yellow-500/10 to-indigo-500/10 p-8">
+        <section className="rounded-3xl border border-yellow-500/40 bg-linear-to-r from-yellow-500/10 to-indigo-500/10 p-8">
           <div className="flex items-center gap-3 mb-4">
             <Crown className="text-yellow-400" />
             <h1 className="text-3xl font-bold">MP OF THE WEEK</h1>

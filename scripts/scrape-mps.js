@@ -1,13 +1,9 @@
-// scripts/scrape-mps.js
-// Run: node scripts/scrape-mps.js
-// Fetches all 544 MPs from PRS data + Wikipedia photos
-
 const fs = require('fs');
 
 const CSV_URL =
   'https://raw.githubusercontent.com/Vonter/india-representatives-activity/main/csv/Lok%20Sabha/18th.csv';
 
-// ── Ministry → Topic grouping ─────────────────────────────────────────────────
+//  Ministry 
 const TOPIC_MAP = {
   'Economy & Finance':   ['Finance','Commerce And Industry','Corporate Affairs','Statistics And Programme Implementation','Planning','Cooperation','Micro, Small And Medium Enterprises','Skill Development And Entrepreneurship','Textiles','Heavy Industries','Steel','Coal','Mines','Petroleum And Natural Gas','Food Processing Industries'],
   'Agriculture & Rural': ['Agriculture And Farmers Welfare','Rural Development','Fisheries, Animal Husbandry And Dairying','Jal Shakti','Panchayati Raj'],

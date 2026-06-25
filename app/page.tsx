@@ -20,7 +20,7 @@ interface AggregatedInsights {
   partyStats: { name: string; count: number; avgScore: number }[];
 }
 
-// ── KPI Card ──────────────────────────────────────────────────────────────────
+// KPI Card 
 function KpiCard({ icon, label, value, sub, iconColor, trend }: {
   icon: React.ReactNode; label: string; value: string | number;
   sub: string; iconColor: string; trend?: string;
@@ -39,26 +39,26 @@ function KpiCard({ icon, label, value, sub, iconColor, trend }: {
   );
 }
 
-// ── Party bar ─────────────────────────────────────────────────────────────────
+//  Party bar
 function PartyBar({ name, count, avgScore, max }: { name: string; count: number; avgScore: number; max: number }) {
   const pct = Math.round((count / max) * 100);
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold text-foreground truncate max-w-[160px]">{name}</span>
+        <span className="font-semibold text-foreground truncate max-w-40">{name}</span>
         <div className="flex items-center gap-3 shrink-0">
           <span className="text-muted-foreground">{count} MPs</span>
           <span className="font-bold text-indigo-400">{avgScore} avg</span>
         </div>
       </div>
       <div className="h-1.5 bg-zinc-900 rounded-full overflow-hidden">
-        <div className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-700" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-full bg-linear-to-r from-indigo-600 to-indigo-400 transition-all duration-700" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
 }
 
-// ── Top MP card ───────────────────────────────────────────────────────────────
+// Top MP 
 function TopMpCard({ mp, rank }: { mp: MP; rank: number }) {
   const medals = ['🥇', '🥈', '🥉'];
   return (
@@ -77,7 +77,7 @@ function TopMpCard({ mp, rank }: { mp: MP; rank: number }) {
   );
 }
 
-// ── Battle stat bar ───────────────────────────────────────────────────────────
+//Battle
 function BattleBar({ label, aVal, bVal, aNum, bNum }: {
   label: string; aVal: string; bVal: string; aNum: number; bNum: number;
 }) {
@@ -151,7 +151,8 @@ export default function HomePage() {
   const [insights, setInsights] = useState<AggregatedInsights | null>(null);
   const [topMps, setTopMps] = useState<MP[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
   useEffect(() => {
     async function load() {
       try {
@@ -170,9 +171,10 @@ export default function HomePage() {
     load();
   }, []);
 
+
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center min-h-[500px]">
+      <div className="flex-1 flex flex-col items-center justify-center min-h-125">
         <div className="w-10 h-10 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
         <span className="mt-3 text-xs text-muted-foreground font-medium">Loading Parliament Session Data...</span>
       </div>
@@ -216,13 +218,19 @@ export default function HomePage() {
             </div>
           </div>
       <div className="shrink-0 flex flex-col items-center gap-2">
-  <img src="/Emblem.webp.webp" alt="Emblem of India" className="w-48 h-48 object-contain brightness-0 invert sepia saturate-[3] hue-rotate-[5deg] opacity-90"/>
+      
+<img
+  src="/Emblem.webp.webp"
+  alt="Emblem of India"
+  className="w-48 h-48 object-contain"
+  id="emblem"
+/>
   <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest leading-tight text-center"></span>
 </div>
         </div>
       </div>
 
-      {/* ── KPI CARDS ────────────────────────────────────────────────────── */}
+      {/*  KPI CARDS  */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard icon={<Users className="h-4 w-4" />} label="Total MPs" value={topMps.length > 0 ? '544' : '—'} sub="18th Lok Sabha" iconColor="text-indigo-400" />
         <KpiCard icon={<Clock className="h-4 w-4" />} label="Avg Voting Attendance" value={insights ? `${insights.avgAttendance}%` : '—'} sub="Excellent democracy engagement" iconColor="text-emerald-400" trend="up" />
@@ -230,9 +238,9 @@ export default function HomePage() {
         <KpiCard icon={<FileText className="h-4 w-4" />} label="Bills Sponsored" value={insights?.totalBills ?? '—'} sub="Private member bills filed" iconColor="text-amber-400" />
       </div>
 
-      {/* ── BATTLE ARENA PREVIEW ─────────────────────────────────────────── */}
+      {/*  BATTLE ARENA */}
       {mpA && mpB && (
-        <div className="rounded-xl border border-border bg-gradient-to-br from-zinc-950 via-zinc-900/40 to-zinc-950 overflow-hidden">
+        <div className="rounded-xl border border-border bg-linear-to-br from-zinc-950 via-zinc-900/40 to-zinc-950 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <div className="flex items-center gap-3">
@@ -305,7 +313,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* ── TOP PERFORMERS + PERFORMANCE DIST ───────────────────────────── */}
+      {/*  TOP PERFORMERS  */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Top MPs */}
@@ -338,7 +346,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Performance distribution + party bars */}
+        {/* Performance party bars */}
         <div className="bg-card border border-border rounded-xl p-6 space-y-5">
           <div className="flex items-center gap-2">
             <BarChart2 className="h-4 w-4 text-indigo-400" />
@@ -354,7 +362,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── QUICK NAV ────────────────────────────────────────────────────── */}
+      {/*  QUICK NAV  */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { href: '/mps', icon: <Clock className="h-5 w-5" />, label: 'Attendance Tracker', desc: 'Track daily attendance in Parliament', color: 'text-emerald-400', border: 'hover:border-emerald-500/30' },
@@ -373,7 +381,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* ── DATA NOTE ────────────────────────────────────────────────────── */}
+      {/* DATA NOTE */}
       <div className="rounded-xl border border-border bg-background p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <p className="text-[10px] text-muted-foreground leading-relaxed">
           Note: Scores are calculated based on attendance, questions, debates, bills, and constituency performance.

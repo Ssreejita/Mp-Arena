@@ -73,7 +73,7 @@ export default function Sidebar({ className }: SidebarProps) {
       case 'SNP': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'Liberal Democrat': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
       case 'Green': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30';
+      default: return 'bg-zinc-500/20 text-muted-foreground border-zinc-500/30';
     }
   };
 
@@ -83,7 +83,7 @@ export default function Sidebar({ className }: SidebarProps) {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-zinc-200 focus:outline-none"
+          className="p-2 bg-background border border-border rounded-lg text-muted-foreground hover:text-foreground focus:outline-none"
         >
           {isMobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -118,8 +118,8 @@ export default function Sidebar({ className }: SidebarProps) {
             <div className="absolute inset-0 bg-linear-to-tr from-indigo-700 to-violet-500" />
             <TrendingUp className="h-4.5 w-4.5 text-white relative z-10" />
           </div>
-          <span className="font-bold text-lg tracking-tight bg-linear-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
-            MP Tracker
+          <span className="font-bold text-lg tracking-tight text-foreground">
+           MP Tracker
           </span>
         </div>
 
@@ -132,14 +132,14 @@ export default function Sidebar({ className }: SidebarProps) {
               placeholder="Quick MP Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-800/80 rounded-lg py-2 pl-9 pr-4 text-sm text-zinc-300 placeholder-zinc-500 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all"
+              className="w-full bg-background border border-border rounded-lg py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all"
             />
           </div>
 
           {/* Quick Search Dropdown */}
           {searchResults.length > 0 && (
-            <div className="absolute left-4 right-4 top-14 mt-1 bg-zinc-900 border border-zinc-850 rounded-lg shadow-2xl z-50 overflow-hidden backdrop-blur-md">
-              <div className="px-3 py-1.5 text-xs font-semibold text-zinc-500 border-b border-zinc-850 bg-zinc-900/50">
+            <div className="absolute left-4 right-4 top-14 mt-1 bg-background border border-border rounded-lg shadow-2xl z-50 overflow-hidden backdrop-blur-md">
+              <div className="px-3 py-1.5 text-xs font-semibold text-zinc-500 border-b border-border bg-background/50">
                 MPs Found
               </div>
               <div className="max-h-60 overflow-y-auto">
@@ -147,20 +147,20 @@ export default function Sidebar({ className }: SidebarProps) {
                   <button
                     key={mp.id}
                     onClick={() => handleSelectMp(mp.id)}
-                    className="w-full text-left px-3 py-2.5 hover:bg-zinc-850/80 border-b border-zinc-850/30 last:border-b-0 flex items-center gap-3 transition-colors group"
+                    className="w-full text-left px-3 py-2.5 hover:bg-zinc-850/80 border-b border-border/30 last:border-b-0 flex items-center gap-3 transition-colors group"
                   >
-                    <div className="w-8 h-8 rounded-full overflow-hidden border border-zinc-800 shrink-0">
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-border shrink-0">
                       <img src={mp.image_url} alt={mp.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-zinc-200 group-hover:text-indigo-400 transition-colors truncate">
+                      <div className="text-sm font-medium text-popover-foreground group-hover:text-indigo-400 transition-colors truncate">
                         {mp.name}
                       </div>
                       <div className="text-xs text-zinc-500 flex items-center gap-1.5 truncate">
                         <span>{mp.constituency}</span>
                       </div>
                     </div>
-                    <ChevronRight className="h-3.5 w-3.5 text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="h-3.5 w-3.5 text-zinc-600 group-hover:text-muted-foreground group-hover:translate-x-0.5 transition-all" />
                   </button>
                 ))}
               </div>
@@ -183,12 +183,12 @@ export default function Sidebar({ className }: SidebarProps) {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group",
                   isActive 
                     ? "bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_12px_rgba(99,102,241,0.05)]" 
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent border border-transparent"
                 )}
               >
                 <Icon className={cn(
                   "h-4 w-4 shrink-0 transition-colors",
-                  isActive ? "text-indigo-400" : "text-zinc-500 group-hover:text-zinc-400"
+                  isActive ? "text-indigo-400" : "text-zinc-500 group-hover:text-muted-foreground"
                 )} />
                 <span>{item.name}</span>
                 {isActive && (
@@ -200,13 +200,13 @@ export default function Sidebar({ className }: SidebarProps) {
         </nav>
 
         {/* Footer Area */}
-        <div className="p-4 border-t border-zinc-900/80 bg-zinc-950/40">
+        <div className="p-4 border-t border-border bg-muted/30">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-xs text-white shadow-md">
               MP
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-zinc-300 truncate">Parliament Session 25</p>
+              <p className="text-xs font-semibold text-foreground truncate">Parliament Session 25</p>
               <p className="text-[10px] text-zinc-500 truncate">Data Feed: Live Mocks</p>
             </div>
           </div>

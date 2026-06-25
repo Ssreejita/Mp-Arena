@@ -309,7 +309,7 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
   },
 
   /**
-   * Get an MP's debates
+   *  MP's debates
    */
   async getMpDebates(mpId: string) {
     if (supabase) {
