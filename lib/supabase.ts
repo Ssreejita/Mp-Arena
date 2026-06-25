@@ -147,7 +147,10 @@ export const db = {
         if (filters?.search) {
           query = query.or(`name.ilike.%${filters.search}%,constituency.ilike.%${filters.search}%`);
         }
-       
+       // Add after line ~98
+if (filters?.party && filters.party !== 'All') {
+  query = query.ilike('party', `%${filters.party}%`);
+}
         if (filters?.region && filters.region !== 'All') {
           query = query.eq('region', filters.region);
         }

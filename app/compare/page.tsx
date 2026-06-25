@@ -275,7 +275,7 @@ export default function ComparePage() {
 
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center min-h-125">
+      <div className="flex-1 flex flex-col items-center justify-center min-h-[500px]">
         <div className="w-12 h-12 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
         <span className="mt-4 text-sm text-zinc-400 font-medium">Loading battle arena...</span>
       </div>
@@ -337,11 +337,11 @@ export default function ComparePage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-indigo-400" />
-                <span className="text-xs font-bold text-zinc-300 truncate max-w-30">{mpA.name}</span>
+                <span className="text-xs font-bold text-zinc-300 truncate max-w-[120px]">{mpA.name}</span>
               </div>
               <h2 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Head to Head</h2>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-zinc-300 truncate max-w-30 text-right">{mpB.name}</span>
+                <span className="text-xs font-bold text-zinc-300 truncate max-w-[120px] text-right">{mpB.name}</span>
                 <div className="w-2 h-2 rounded-full bg-rose-400" />
               </div>
             </div>
