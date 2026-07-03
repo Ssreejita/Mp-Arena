@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Sidebar from "@/components/Sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import ThemeToggle from "@/components/theme-toggle";
+import ConditionalLayout from "@/components/ConditionalLayout";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,42 +15,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MP Performance Dashboard",
-  description:
-    "A premium modern analytics dashboard tracking parliamentary member activities.",
+  title: "LokLens — Parliament Tracker",
+  description: "Track your MP. Know your Parliament.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body
-        className="
-          min-h-full
-          flex
-          flex-col
-          md:flex-row
-          bg-white
-          text-black
-          dark:bg-zinc-950
-          dark:text-zinc-50
-        "
-      >
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col md:flex-row bg-white text-black dark:bg-zinc-950 dark:text-zinc-50">
         <ThemeProvider>
-          <Sidebar />
-
-          <ThemeToggle />
-
-          <main className="flex-1 min-w-0 min-h-screen flex flex-col overflow-y-auto px-4 py-8 md:px-8 lg:px-12 pt-20 lg:pt-8">
+          <ConditionalLayout>
             {children}
-          </main>
+          </ConditionalLayout>
         </ThemeProvider>
       </body>
     </html>

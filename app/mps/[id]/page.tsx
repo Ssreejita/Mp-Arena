@@ -34,12 +34,104 @@ import {
   Radar
 } from 'recharts';
 import { db, MP, MPPerformanceHistory, MPTopic, MPBill, MPQuestion, MPDebate } from '@/lib/supabase';
+type MpComparison = Awaited<ReturnType<typeof db.getMpComparison>>;
 import { cn } from '@/lib/utils';
+function DetailModal({ item, type, onClose }: { item: any; type: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full space-y-4 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <p className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mb-1">
+              {type === 'bill' ? 'Private Member Bill' : type === 'question' ? 'Parliamentary Question' : 'Debate'}
+            </p>
+            <h3 className="text-sm font-black text-zinc-100 leading-snug">
+              {type === 'bill' ? item.title : type === 'question' ? item.question_text : item.title}
+            </h3>
+          </div>
+          <button onClick={onClose} className="text-zinc-500 hover:text-zinc-200 text-lg font-bold shrink-0">✕</button>
+        </div>
 
+        {/* Details */}
+        <div className="space-y-3 border-t border-zinc-800 pt-4">
+          {type === 'question' && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Ministry</p>
+                  <p className="text-xs text-zinc-300 font-bold mt-0.5">{item.category || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Type</p>
+                  <p className="text-xs text-zinc-300 font-bold mt-0.5">{item.type || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Date</p>
+                  <p className="text-xs text-zinc-300 font-bold mt-0.5">{item.date || '—'}</p>
+                </div>
+              </div>
+              {item.source_url && item.source_url.startsWith('http') && (
+                <a href={item.source_url} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors w-full justify-center">
+                  View Full Question PDF →
+                </a>
+              )}
+            </>
+          )}
+
+          {type === 'bill' && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Status</p>
+                  <p className="text-xs text-amber-400 font-bold mt-0.5">{item.status || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Date Introduced</p>
+                  <p className="text-xs text-zinc-300 font-bold mt-0.5">{item.date_introduced || '—'}</p>
+                </div>
+              </div>
+              {item.source_url && item.source_url.startsWith('http') && (
+                <a href={item.source_url} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-colors w-full justify-center">
+                  View Bill PDF →
+                </a>
+              )}
+            </>
+          )}
+
+          {type === 'debate' && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Type</p>
+                  <p className="text-xs text-zinc-300 font-bold mt-0.5">{item.debate_type || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Date</p>
+                  <p className="text-xs text-zinc-300 font-bold mt-0.5">{item.date || '—'}</p>
+                </div>
+              </div>
+              {item.source_url && item.source_url.startsWith('http') && (
+                <a href={item.source_url} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-colors w-full justify-center">
+                  View Debate →
+                </a>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 export default function MpDashboardPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  console.log("MP ID:", id);
 
   const [loading, setLoading] = useState(true);
   const [mp, setMp] = useState<MP | null>(null);
@@ -48,7 +140,9 @@ export default function MpDashboardPage() {
   const [bills, setBills] = useState<MPBill[]>([]);
   const [questions, setQuestions] = useState<MPQuestion[]>([]);
   const [debates, setDebates] = useState<MPDebate[]>([]);
-
+  const [comparison, setComparison] = useState<MpComparison>(null);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [modalType, setModalType] = useState<'bill' | 'question' | 'debate' | null>(null);
   const [activeTab, setActiveTab] = useState<'bills' | 'questions' | 'debates'>('bills');
   const [tabSearch, setTabSearch] = useState('');
 
@@ -63,19 +157,20 @@ export default function MpDashboardPage() {
         }
         setMp(mpData);
 
-        const [histData, topicData, billData, qData, dData] = await Promise.all([
-          db.getMpHistory(id),
-          db.getMpTopics(id),
-          db.getMpBills(id),
-          db.getMpQuestions(id),
-          db.getMpDebates(id)
-        ]);
-
+  const [histData, topicData, billData, qData, dData, compData] = await Promise.all([
+  db.getMpHistory(id),
+  db.getMpTopics(id),
+  db.getMpBills(id),
+  db.getMpQuestions(id),
+  db.getMpDebates(id),
+  db.getMpComparison(id)
+]);
         setHistory(histData);
         setTopics(topicData);
         setBills(billData);
         setQuestions(qData);
         setDebates(dData);
+        setComparison(compData);
       } catch (err) {
         console.error('Error loading MP details:', err);
       } finally {
@@ -98,6 +193,7 @@ export default function MpDashboardPage() {
 
   if (loading || !mp) {
     return (
+      
       <div className="flex-1 flex flex-col items-center justify-center min-h-125">
         <div className="w-12 h-12 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
         <span className="mt-4 text-sm text-zinc-400 font-medium">Assembling Member Dashboard...</span>
@@ -130,6 +226,7 @@ export default function MpDashboardPage() {
   );
 
   return (
+    
     <div className="space-y-8 max-w-7xl mx-auto w-full">
       {/* Back Button */}
       <Link
@@ -254,41 +351,124 @@ export default function MpDashboardPage() {
             <p className="text-[10px] text-emerald-400 mt-1">Parliament sessions</p>
           </div>
         </div>
+        <Link href={`/mps/${id}/questions`}>
+  <div className="glow-card bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl flex flex-col justify-between cursor-pointer hover:border-violet-500 transition">
+    <div className="flex items-center justify-between">
+      <span className="text-[10px] font-bold text-zinc-400 uppercase">
+        Questions
+      </span>
+      <MessageSquare className="h-4 w-4 text-violet-400" />
+    </div>
 
-        <div className="glow-card bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 tracking-wider uppercase">Questions</span>
-            <MessageSquare className="h-4 w-4 text-violet-400" />
-          </div>
-          <div className="mt-4">
-            <h3 className="text-3xl font-bold text-zinc-100">{mp.questions_count}</h3>
-            <p className="text-[10px] text-zinc-500 mt-1">Asked in Lok Sabha</p>
-          </div>
-        </div>
+    <div className="mt-4">
+      <h3 className="text-3xl font-bold text-zinc-100">
+        {mp.questions_count}
+      </h3>
+      <p className="text-[10px] text-zinc-500 mt-1">
+        Asked in Lok Sabha
+      </p>
+    </div>
+  </div>
+</Link>
+       <Link href={`/mps/${id}/debates`}>
+  <div className="glow-card bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl flex flex-col justify-between cursor-pointer hover:border-pink-500 transition">
+    <div className="flex items-center justify-between">
+      <span className="text-[10px] font-bold text-zinc-400 uppercase">
+        Debates
+      </span>
+      <MessageCircle className="h-4 w-4 text-pink-400" />
+    </div>
 
-        <div className="glow-card bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 tracking-wider uppercase">Debates</span>
-            <MessageCircle className="h-4 w-4 text-pink-400" />
-          </div>
-          <div className="mt-4">
-            <h3 className="text-3xl font-bold text-zinc-100">{mp.debates_count}</h3>
-            <p className="text-[10px] text-zinc-500 mt-1">Debate participations</p>
-          </div>
-        </div>
+    <div className="mt-4">
+      <h3 className="text-3xl font-bold text-zinc-100">
+        {mp.debates_count}
+      </h3>
+      <p className="text-[10px] text-zinc-500 mt-1">
+        Debate participations
+      </p>
+    </div>
+  </div>
+</Link>
+      <Link href={`/mps/${id}/bills`}>
+  <div className="glow-card bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl flex flex-col justify-between cursor-pointer hover:border-amber-500 transition">
+    <div className="flex items-center justify-between">
+      <span className="text-[10px] font-bold text-zinc-400 uppercase">
+        Bills Sponsored
+      </span>
+      <FileText className="h-4 w-4 text-amber-400" />
+    </div>
 
-        <div className="glow-card bg-zinc-900/30 border border-zinc-900 p-5 rounded-xl flex flex-col justify-between col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-zinc-400 tracking-wider uppercase">Bills Sponsored</span>
-            <FileText className="h-4 w-4 text-amber-400" />
-          </div>
-          <div className="mt-4">
-            <h3 className="text-3xl font-bold text-zinc-100">{mp.bills_sponsored}</h3>
-            <p className="text-[10px] text-amber-400 mt-1">Private member bills</p>
-          </div>
-        </div>
+    <div className="mt-4">
+      <h3 className="text-3xl font-bold text-zinc-100">
+        {mp.bills_sponsored}
+      </h3>
+      <p className="text-[10px] text-amber-400 mt-1">
+        Private member bills
+      </p>
+    </div>
+  </div>
+</Link>
+</div>
+      {/* State vs India Comparison */}
+{comparison && (
+  <div className="bg-zinc-900/20 border border-zinc-900 rounded-xl p-6 space-y-4">
+    <div className="flex items-center gap-2">
+      <TrendingUp className="h-4 w-4 text-indigo-400" />
+      <h2 className="text-sm font-black text-zinc-200">How does this MP compare?</h2>
+    </div>
+    
+
+    {/* Column Headers */}
+    <div className="grid grid-cols-4 gap-4 text-[9px] font-bold text-zinc-500 uppercase tracking-widest px-1">
+      <span>Metric</span>
+      <span className="text-center text-indigo-400">This MP</span>
+      <span className="text-center text-emerald-400">{comparison.state.label} Avg</span>
+      <span className="text-center text-amber-400">India Avg</span>
+    </div>
+
+    {/* Rows */}
+    {[
+      { label: 'Attendance %', mp: comparison.mp.attendance_rate, state: comparison.state.attendance_rate, india: comparison.india.attendance_rate },
+      { label: 'Questions', mp: comparison.mp.questions_count, state: comparison.state.questions_count, india: comparison.india.questions_count },
+      { label: 'Debates', mp: comparison.mp.debates_count, state: comparison.state.debates_count, india: comparison.india.debates_count },
+      { label: 'Bills', mp: comparison.mp.bills_sponsored, state: comparison.state.bills_sponsored, india: comparison.india.bills_sponsored },
+    ].map(row => (
+      <div key={row.label} className="grid grid-cols-4 gap-4 items-center px-1 py-2 rounded-lg bg-zinc-900/30">
+        <span className="text-xs text-zinc-400">{row.label}</span>
+        <span className={cn(
+          'text-center text-sm font-black',
+          row.mp >= row.india ? 'text-indigo-400' : 'text-rose-400'
+        )}>{row.mp}</span>
+        <span className="text-center text-sm font-bold text-emerald-400">{row.state}</span>
+        <span className="text-center text-sm font-bold text-amber-400">{row.india}</span>
       </div>
+    ))}
 
+    {/* Verdict */}
+    <div className="pt-2 border-t border-zinc-900 text-xs text-zinc-500">
+      <span className="text-indigo-400 font-bold">↑</span> above India avg &nbsp;|&nbsp;
+      <span className="text-rose-400 font-bold">↓</span> below India avg
+    </div>
+  </div>
+)}
+{/* Activity Timeline */}
+<div className="bg-zinc-900/20 border border-zinc-900 rounded-xl p-6">
+  <h2 className="text-lg font-bold text-zinc-200 mb-4">Activity Timeline</h2>
+  {areaData.length > 0 ? (
+    <ResponsiveContainer width="100%" height={200}>
+      <AreaChart data={areaData}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+        <XAxis dataKey="name" stroke="#888888" fontSize={10} />
+        <YAxis stroke="#888888" fontSize={10} />
+        <Tooltip contentStyle={{ backgroundColor: '#121214', borderColor: '#27272a', borderRadius: '8px', color: '#f4f4f5' }} />
+        <Area type="monotone" dataKey="Score" stroke="#6366f1" fill="#6366f1" fillOpacity={0.2} />
+        <Area type="monotone" dataKey="Attendance" stroke="#10b981" fill="#10b981" fillOpacity={0.2} />
+      </AreaChart>
+    </ResponsiveContainer>
+  ) : (
+    <span className="text-xs text-zinc-500">No historical data available</span>
+  )}
+</div>
       {/* AI Summary & Topic Breakdown Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 bg-zinc-900/20 border border-zinc-900 rounded-xl p-6 relative overflow-hidden flex flex-col justify-between">
@@ -369,6 +549,105 @@ export default function MpDashboardPage() {
       ))}
     </div>
   </div>
+  {/* Bills / Questions / Debates Tabs */}
+<div className="bg-zinc-900/20 border border-zinc-900 rounded-xl p-6 space-y-4">
+  {/* Tab Headers */}
+  <div className="flex items-center gap-2 border-b border-zinc-900 pb-3">
+    {(['bills', 'questions', 'debates'] as const).map(tab => (
+      <button
+        key={tab}
+        onClick={() => { setActiveTab(tab); setTabSearch(''); }}
+        className={cn(
+          'px-4 py-1.5 rounded-lg text-xs font-bold capitalize transition-colors',
+          activeTab === tab
+            ? 'bg-indigo-600 text-white'
+            : 'text-zinc-400 hover:text-zinc-200'
+        )}
+      >
+        {tab} {tab === 'bills' ? `(${bills.length})` : tab === 'questions' ? `(${questions.length})` : `(${debates.length})`}
+      </button>
+    ))}
+
+    {/* Search */}
+    <div className="ml-auto relative">
+      <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-zinc-500" />
+      <input
+        type="text"
+        placeholder="Search..."
+        value={tabSearch}
+        onChange={e => setTabSearch(e.target.value)}
+        className="pl-8 pr-3 py-1.5 text-xs bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 w-48"
+      />
+    </div>
+  </div>
+
+  {/* Tab Content */}
+  <div className="space-y-3 max-h-96 overflow-y-auto">
+
+    {/* Bills */}
+    {activeTab === 'bills' && (
+      filteredBills.length > 0 ? filteredBills.map(b => (
+        <div
+  key={b.id}
+  onClick={() => {
+    setSelectedItem(b);
+    setModalType("bill");
+  }}
+  className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-900 space-y-1 cursor-pointer hover:border-amber-500 hover:bg-zinc-900/70 transition-all"
+>
+          <p className="text-[10px] text-zinc-500">{b.description}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[9px] px-2 py-0.5 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-400">{b.status}</span>
+            <span className="text-[9px] text-zinc-600">{b.date_introduced}</span>
+          </div>
+        </div>
+      )) : <p className="text-xs text-zinc-500 text-center py-6">No bills found</p>
+    )}
+
+    {/* Questions */}
+    {activeTab === 'questions' && (
+      filteredQuestions.length > 0 ? filteredQuestions.map(q => (
+        <div
+  key={q.id}
+  onClick={() => {
+    setSelectedItem(q);
+    setModalType("question");
+  }}
+  className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-900 space-y-1 cursor-pointer hover:border-violet-500 hover:bg-zinc-900/70 transition-all"
+>
+          <p className="text-xs font-bold text-zinc-200">{q.question_text}</p>
+          {q.response_text && <p className="text-[10px] text-zinc-500">{q.response_text}</p>}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[9px] px-2 py-0.5 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-400">{q.category}</span>
+            <span className="text-[9px] text-zinc-600">{q.date}</span>
+          </div>
+        </div>
+      )) : <p className="text-xs text-zinc-500 text-center py-6">No questions found</p>
+    )}
+
+    {/* Debates */}
+    {activeTab === 'debates' && (
+      filteredDebates.length > 0 ? filteredDebates.map(d => (
+        <div
+  key={d.id}
+  onClick={() => {
+    setSelectedItem(d);
+    setModalType("debate");
+  }}
+  className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-900 space-y-1 cursor-pointer hover:border-pink-500 hover:bg-zinc-900/70 transition-all"
+>
+          <p className="text-xs font-bold text-zinc-200">{d.title}</p>
+          {d.speech_snippet && <p className="text-[10px] text-zinc-500 italic">"{d.speech_snippet}"</p>}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[9px] text-zinc-600">{d.contributions_count} contributions</span>
+            <span className="text-[9px] text-zinc-600">{d.date}</span>
+          </div>
+        </div>
+      )) : <p className="text-xs text-zinc-500 text-center py-6">No debates found</p>
+    )}
+
+  </div>
+</div>
 
   <div className="bg-zinc-900/20 border border-zinc-900 rounded-xl p-6">
     <h2 className="text-lg font-bold text-zinc-200 mb-4">
@@ -417,7 +696,16 @@ export default function MpDashboardPage() {
     </div>
   </div>
 </div>
-   
+   {selectedItem && modalType && (
+  <DetailModal
+    item={selectedItem}
+    type={modalType}
+    onClose={() => {
+      setSelectedItem(null);
+      setModalType(null);
+    }}
+  />
+)}
     </div>
   );
 }

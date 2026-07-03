@@ -70,7 +70,7 @@ function StatBar({
 function MPSelector({
   slot, selected, allMps, onChange, color, accentClass
 }: {
-  slot: 'A' | 'B';
+  slot: 'A' | 'B' | 'C' | 'D' | 'E';
   selected: MP | null;
   allMps: MP[];
   onChange: (id: string) => void;
@@ -107,7 +107,7 @@ function MPSelector({
           {slot}
         </div>
         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-          {slot === 'A' ? 'Challenger' : 'Opponent'}
+          {slot === 'A' ? 'Challenger' : slot === 'B' ? 'Opponent' : `Player ${slot}`}
         </span>
       </div>
 
@@ -268,6 +268,7 @@ export default function ComparePage() {
   const [loading, setLoading] = useState(true);
   const [idA, setIdA] = useState('mp-1');
   const [idB, setIdB] = useState('mp-100');
+ 
 
   useEffect(() => {
     db.getMps().then(data => { setAllMps(data); setLoading(false); }).catch(() => setLoading(false));
@@ -284,12 +285,16 @@ export default function ComparePage() {
 
   const mpA = allMps.find(m => m.id === idA) ?? null;
   const mpB = allMps.find(m => m.id === idB) ?? null;
+  const allSelected = [mpA, mpB].filter(Boolean) as MP[];
 
   const getWinner = (a: number, b: number): 'A' | 'B' | 'tie' =>
     a > b ? 'A' : a < b ? 'B' : 'tie';
 
   const COLOR_A = '#6366f1';
   const COLOR_B = '#f43f5e';
+  const COLOR_C = '#10b981';
+  const COLOR_D = '#f59e0b';
+  const COLOR_E = '#a855f7';
 
   const stats = mpA && mpB ? [
     { label: 'Overall Score', icon: <Award className="h-3 w-3" />, a: mpA.overall_score, b: mpB.overall_score, max: 100, unit: 'pts', winner: getWinner(mpA.overall_score, mpB.overall_score) },
@@ -312,36 +317,44 @@ export default function ComparePage() {
         <p className="text-muted-foreground text-sm">Pick two MPs. See who wins across every metric. May the best parliamentarian win.</p>
       </div>
 
-      {/* VS Selector */}
-      <div className="flex flex-col md:flex-row items-stretch gap-4 relative">
-        <MPSelector slot="A" selected={mpA} allMps={allMps} onChange={setIdA} color={COLOR_A} accentClass="text-indigo-400" />
+      {/* VS Selector — up to 5 MPs */}
+{/* VS Selector */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <MPSelector
+    slot="A"
+    selected={mpA}
+    allMps={allMps}
+    onChange={setIdA}
+    color={COLOR_A}
+    accentClass=""
+  />
 
-        {/* VS Badge */}
-        <div className="flex items-center justify-center md:flex-col shrink-0">
-          <div className="w-12 h-12 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center">
-            <span className="text-sm font-black text-foreground">VS</span>
-          </div>
-        </div>
-
-        <MPSelector slot="B" selected={mpB} allMps={allMps} onChange={setIdB} color={COLOR_B} accentClass="text-rose-400" />
-      </div>
+  <MPSelector
+    slot="B"
+    selected={mpB}
+    allMps={allMps}
+    onChange={setIdB}
+    color={COLOR_B}
+    accentClass=""
+  />
+</div>
 
       {/* Battle Stats */}
-      {mpA && mpB && (
+      {allSelected.length >= 2 && (
         <>
           {/* Winner banner */}
-          <WinnerBanner mpA={mpA} mpB={mpB} />
+          <WinnerBanner mpA={allSelected[0]} mpB={allSelected[1]} />
 
           {/* Stat bars */}
           <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-indigo-400" />
-                <span className="text-xs font-bold text-foreground truncate max-w-[120px]">{mpA.name}</span>
+                <span className="text-xs font-bold text-foreground truncate max-w-[120px]">{mpA!.name}</span>
               </div>
               <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Head to Head</h2>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-foreground truncate max-w-[120px] text-right">{mpB.name}</span>
+                <span className="text-xs font-bold text-foreground truncate max-w-[120px] text-right">{mpB!.name}</span>
                 <div className="w-2 h-2 rounded-full bg-rose-400" />
               </div>
             </div>
@@ -366,7 +379,7 @@ export default function ComparePage() {
           </div>
 
           {/* Topic focus comparison */}
-          {mpA.top_topics && mpB.top_topics && (
+          {mpA && mpB && (
             <div className="grid grid-cols-2 gap-4">
               {[{ mp: mpA, color: COLOR_A, label: 'Challenger Focus' }, { mp: mpB, color: COLOR_B, label: 'Opponent Focus' }].map(({ mp, color, label }) => (
                 <div key={mp.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
@@ -384,28 +397,44 @@ export default function ComparePage() {
               ))}
             </div>
           )}
-
           {/* View profiles */}
           <div className="grid grid-cols-2 gap-4">
-            {[{ mp: mpA, color: COLOR_A }, { mp: mpB, color: COLOR_B }].map(({ mp, color }) => (
-              <Link
-                key={mp.id}
-                href={`/mps/${mp.id}`}
-                className="flex items-center justify-center gap-2 py-3 rounded-xl border text-xs font-bold transition-all hover:scale-[1.02]"
-                style={{ borderColor: `${color}40`, color, background: `${color}08` }}
-              >
-                <span>View {mp.name.split(' ')[0]}'s Full Profile</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            ))}
+            {[
+              { mp: mpA, color: COLOR_A },
+              { mp: mpB, color: COLOR_B },
+             
+            ]
+              .filter(
+                (item): item is { mp: MP; color: string } =>
+                  item.mp !== null
+              )
+              .map(({ mp, color }) => (
+                <Link
+                  key={mp.id}
+                  href={`/mps/${mp.id}`}
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl border text-xs font-bold transition-all hover:scale-[1.02]"
+                  style={{
+                    borderColor: `${color}40`,
+                    color,
+                    background: `${color}08`,
+                  }}
+                >
+                  <span>
+                    View {mp.name.split(" ")[0]}'s Full Profile
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              ))}
           </div>
         </>
       )}
 
-      {(!mpA || !mpB) && (
+      {allSelected.length < 2 && (
         <div className="text-center py-16 text-muted-foreground">
           <Swords className="h-12 w-12 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">Select two MPs above to start the battle</p>
+          <p className="text-sm">
+            Select at least two MPs above to start the battle
+          </p>
         </div>
       )}
     </div>

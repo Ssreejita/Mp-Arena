@@ -50,34 +50,108 @@ CREATE TABLE mp_topics (
 );
 
 -- Sponsored Bills list
+
+-- Updated Bills Table to match Front-End
 CREATE TABLE mp_bills (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  status VARCHAR(100) NOT NULL, -- e.g., 'Royal Assent', 'First Reading', 'Second Reading', 'Failed'
-  description TEXT,
-  date_introduced DATE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
+    title TEXT,                  -- Matches b.title
+    bill_number TEXT,
+    description TEXT,            -- Matches b.description
+    stage TEXT,
+    status TEXT,
+    house TEXT,
+    date_introduced DATE,        -- Matches b.date_introduced
+    last_updated DATE,
+    bill_pdf TEXT,
+    source_url TEXT
 );
 
--- Questions asked
+-- Updated Questions Table to match Front-End
 CREATE TABLE mp_questions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
-  question_text TEXT NOT NULL,
-  response_text TEXT,
-  date DATE,
-  category VARCHAR(100), -- 'Oral' or 'Written'
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
+    question_number INT,
+    session TEXT,
+    ministry TEXT,
+    category VARCHAR(100),
+    question_text TEXT,          -- Matches q.question_text
+    response_text TEXT,          -- Matches q.response_text
+    date DATE,                   -- Matches q.date
+    answer_date DATE,
+    question_pdf TEXT,
+    answer_pdf TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    source_url TEXT
 );
+ALTER TABLE mp_questions
+ADD COLUMN question_type TEXT,          -- Starred / Unstarred / Short Notice
+ADD COLUMN answer_type TEXT,            -- Written / Oral
+ADD COLUMN loksabha_session TEXT,
+ADD COLUMN parliament_number TEXT,      -- 18th Lok Sabha
+ADD COLUMN ministry_name TEXT,
+ADD COLUMN full_answer TEXT,
+ADD COLUMN keywords TEXT[],
+ADD COLUMN source TEXT DEFAULT 'PRS';
 
--- Debate snippets
+-- Updated Debates Table to match Front-End
 CREATE TABLE mp_debates (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  contributions_count INT DEFAULT 1,
-  date DATE,
-  speech_snippet TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
+    title TEXT,                  -- Matches d.title
+    debate_type TEXT,
+    ministry TEXT,
+    date DATE,                   -- Matches d.date
+    duration_minutes INT,
+    contributions_count INT DEFAULT 1, -- Matches d.contributions_count
+    speech_snippet TEXT,         -- Matches d.speech_snippet
+    transcript_url TEXT,
+    video_url TEXT
+);
+ALTER TABLE mp_debates
+ADD COLUMN full_transcript TEXT,
+ADD COLUMN house TEXT,
+ADD COLUMN session TEXT,
+ADD COLUMN topic TEXT,
+ADD COLUMN prs_url TEXT,
+ADD COLUMN source TEXT DEFAULT 'PRS';
+
+
+
+CREATE TABLE private_member_bills (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
+
+    title TEXT,
+
+    status TEXT,
+
+    introduced_on DATE,
+
+    summary TEXT,
+
+    pdf_url TEXT
+);
+ALTER TABLE mp_bills
+ADD COLUMN objective TEXT,
+ADD COLUMN key_provisions TEXT,
+ADD COLUMN bill_type TEXT,
+ADD COLUMN passed_date DATE,
+ADD COLUMN withdrawn_date DATE,
+ADD COLUMN current_stage TEXT,
+ADD COLUMN sponsor_type TEXT,
+ADD COLUMN source TEXT DEFAULT 'PRS';
+CREATE TABLE mp_votes (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    mp_id UUID REFERENCES mps(id) ON DELETE CASCADE,
+
+    bill_name TEXT,
+
+    vote TEXT,
+
+    vote_date DATE
 );

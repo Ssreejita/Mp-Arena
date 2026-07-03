@@ -49,28 +49,88 @@ export interface MPTopic {
 export interface MPBill {
   id: string;
   mp_id: string;
+
   title: string;
-  status: 'Royal Assent' | 'First Reading' | 'Second Reading' | 'Committee Stage' | 'Report Stage' | 'Third Reading' | 'Failed';
-  description: string;
-  date_introduced: string;
+
+  description?: string;
+  objective?: string;
+  key_provisions?: string;
+
+  status: string;
+
+  bill_type?: string;
+  current_stage?: string;
+
+  sponsor_type?: string;
+
+  date_introduced?: string;
+  passed_date?: string;
+
+  bill_pdf?: string;
+  source_url?: string;
 }
 
 export interface MPQuestion {
   id: string;
   mp_id: string;
-  question_text: string;
-  response_text: string;
-  date: string;
-  category: 'Oral' | 'Written';
-}
 
+  question_number?: number;
+  question_type?: string;
+  answer_type?: string;
+
+  ministry?: string;
+  ministry_name?: string;
+
+  session?: string;
+  loksabha_session?: string;
+  parliament_number?: string;
+
+  category: string;
+
+  question_text: string;
+  response_text?: string;
+  full_answer?: string;
+
+  date: string;
+  answer_date?: string;
+
+  question_pdf?: string;
+  answer_pdf?: string;
+
+  source_url?: string;
+  prs_url?: string;
+
+  keywords?: string[];
+}
 export interface MPDebate {
   id: string;
   mp_id: string;
+
   title: string;
-  contributions_count: number;
+
+  debate_type?: string;
+
+  ministry?: string;
+
+  topic?: string;
+
+  session?: string;
+
+  house?: string;
+
   date: string;
-  speech_snippet: string;
+
+  contributions_count: number;
+
+  speech_snippet?: string;
+
+  full_transcript?: string;
+
+  transcript_url?: string;
+
+  video_url?: string;
+
+  prs_url?: string;
 }
 
 // Environment variables
@@ -90,7 +150,7 @@ export const supabase = supabaseUrl && supabaseAnonKey
 // REAL DATA — 18th Lok Sabha (544 MPs)
 // ==========================================
 
-import mpDataRaw from './mp-data.json';
+import mpDataRaw from './mp-data-enriched.json'
 
 const MOCK_MPS: MP[] = (mpDataRaw as any[]).map(mp => ({
   ...mp,
@@ -273,7 +333,42 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
 
     return MOCK_TOPICS.filter(t => t.mp_id === mpId);
   },
+/**
+   * Get MP comparison — this MP vs state average vs India average
+   */
+  async getMpComparison(mpId: string) {
+    const allMps = await this.getMps();
+    const mp = allMps.find(m => m.id === mpId);
+    if (!mp) return null;
 
+    const stateMps = allMps.filter(m => m.state === mp.state);
+    const indiaMps = allMps;
+
+    const avg = (arr: MP[], key: keyof MP) =>
+      Number((arr.reduce((acc, m) => acc + (m[key] as number), 0) / arr.length).toFixed(1));
+
+    return {
+      mp: {
+        attendance_rate: mp.attendance_rate,
+        questions_count: mp.questions_count,
+        debates_count: mp.debates_count,
+        bills_sponsored: mp.bills_sponsored,
+      },
+      state: {
+        label: mp.state,
+        attendance_rate: avg(stateMps, 'attendance_rate'),
+        questions_count: avg(stateMps, 'questions_count'),
+        debates_count: avg(stateMps, 'debates_count'),
+        bills_sponsored: avg(stateMps, 'bills_sponsored'),
+      },
+      india: {
+        attendance_rate: avg(indiaMps, 'attendance_rate'),
+        questions_count: avg(indiaMps, 'questions_count'),
+        debates_count: avg(indiaMps, 'debates_count'),
+        bills_sponsored: avg(indiaMps, 'bills_sponsored'),
+      },
+    };
+  },
   /**
    * Get an MP's bills
    */
@@ -288,9 +383,24 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
       }
     }
 
-    return MOCK_BILLS.filter(b => b.mp_id === mpId).sort((a, b) => b.date_introduced.localeCompare(a.date_introduced));
+const mp = MOCK_MPS.find(m => m.id === mpId) as any;
+return (mp?._bills || []).sort((a: any, b: any) => b.date_introduced.localeCompare(a.date_introduced));
   },
+async getBillById(billId: string) {
 
+  if (supabase) {
+
+    const { data } = await supabase
+      .from("mp_bills")
+      .select("*")
+      .eq("id", billId)
+      .single();
+
+    return data;
+  }
+
+  return null;
+},
   /**
    * Get an MP's questions
    */
@@ -304,14 +414,30 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
         console.error('Supabase query error, falling back to mock:', err);
       }
     }
-
-    return MOCK_QUESTIONS.filter(q => q.mp_id === mpId).sort((a, b) => b.date.localeCompare(a.date));
+const mp = MOCK_MPS.find(m => m.id === mpId) as any;
+return (mp?._questions || []).sort((a: any, b: any) => b.date.localeCompare(a.date));
   },
+  async getQuestionById(questionId: string) {
+
+  if (supabase) {
+
+    const { data } = await supabase
+      .from("mp_questions")
+      .select("*")
+      .eq("id", questionId)
+      .single();
+
+    return data;
+  }
+
+  return null;
+},
 
   /**
    *  MP's debates
    */
   async getMpDebates(mpId: string) {
+    
     if (supabase) {
       try {
         const { data, error } = await supabase.from('mp_debates').select('*').eq('mp_id', mpId).order('date', { ascending: false });
@@ -322,9 +448,24 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
       }
     }
 
-    return MOCK_DEBATES.filter(d => d.mp_id === mpId).sort((a, b) => b.date.localeCompare(a.date));
+    const mp = MOCK_MPS.find(m => m.id === mpId) as any;
+    return (mp?._debates || []).sort((a: any, b: any) => b.date.localeCompare(a.date));
   },
+async getDebateById(debateId: string) {
 
+  if (supabase) {
+
+    const { data } = await supabase
+      .from("mp_debates")
+      .select("*")
+      .eq("id", debateId)
+      .single();
+
+    return data;
+  }
+
+  return null;
+},
   /**
    * Get aggregated insights for home page
    */

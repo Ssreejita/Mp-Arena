@@ -111,7 +111,15 @@ function fallbackAvatar(name) {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a5f&color=fff&size=300&bold=true`;
 }
 
-// ── Rate-limited fetch with retries ──────────────────────────────────────────
+async function verifyPrsUrl(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok ? url : '';
+  } catch {
+    return '';
+  }
+}
+
 async function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
@@ -202,8 +210,8 @@ async function main() {
         `Top focus areas: ${topTopics.join(', ') || 'general legislation'}. ` +
         `Attendance: ${attendance}% | Questions: ${questions} | Debates: ${debates} | Bills: ${bills}.`,
       image_url,
-      prs_url: `https://prsindia.org/mptrack/18-lok-sabha/${mp['Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`,
-      email:   '',
+      prs_url: await verifyPrsUrl(`https://prsindia.org/mptrack/18-lok-sabha/${mp['Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`),
+      email:'',
       website: '',
       twitter: '',
       status:  'Active' ,

@@ -1,7 +1,10 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
+import { useTheme } from "next-themes";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import IndiaMap from '@/components/IndiaMap';
+import { toSlug } from "@/lib/stateSlug";
 import {
   TrendingUp, Award, Clock, MessageSquare, FileText,
   ArrowRight, Users, BarChart2, ChevronRight, Sparkles,
@@ -151,7 +154,22 @@ export default function HomePage() {
   const [insights, setInsights] = useState<AggregatedInsights | null>(null);
   const [topMps, setTopMps] = useState<MP[]>([]);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const router = useRouter();
+  const { resolvedTheme } = useTheme();
+const [selectedState, setSelectedState] = useState<string | null>(null);
+
+const handleStateClick = (state: string) => {
+  if (!state) {
+    setSelectedState(null);
+    return;
+  }
+  setSelectedState(state);
+  setTimeout(() => {
+    router.push(`/mps?region=${encodeURIComponent(state)}`);
+  }, 600);
+};
+  
+  
   
   useEffect(() => {
     async function load() {
@@ -197,7 +215,7 @@ export default function HomePage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
               <Activity className="h-3.5 w-3.5" />
-              <span>18th lok sabha 2026 Analytics Live</span>
+              <span>18th Lok Sabha · Data as of 2024</span>
             </div>
            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground leading-tight">
                LokLens. <span className="text-emerald-400"></span>
@@ -216,16 +234,19 @@ export default function HomePage() {
                 ⚔️ MP Arena
               </Link>
             </div>
-          </div>
-      <div className="shrink-0 flex flex-col items-center gap-2">
-      
-<img
+      </div>
+ <div className="shrink-0 flex flex-col items-center gap-2">
+ <img
   src="/Emblem.webp.webp"
   alt="Emblem of India"
-  className="w-48 h-48 object-contain"
-  id="emblem"
+  className="w-48 h-48 object-contain opacity-90"
+  style={{
+    filter:
+      resolvedTheme === "dark"
+        ? "brightness(0) invert(1)"
+        : "brightness(0) opacity(0.18)",
+  }}
 />
-  <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest leading-tight text-center"></span>
 </div>
         </div>
       </div>
@@ -384,8 +405,9 @@ export default function HomePage() {
       {/* DATA NOTE */}
       <div className="rounded-xl border border-border bg-background p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <p className="text-[10px] text-muted-foreground leading-relaxed">
-          Note: Scores are calculated based on attendance, questions, debates, bills, and constituency performance.
-        </p>
+  Note: Scores are calculated based on attendance, questions, debates, bills, and constituency performance.{' '}
+  <Link href="/methodology" className="text-indigo-400 hover:text-indigo-300 underline">How we calculate scores →</Link>
+</p>
         <p className="text-[10px] text-muted-foreground sm:text-right leading-relaxed shrink-0">
           Data Source: PRS India | Lok Sabha<br />18th Parliament Session · 2024–Present
         </p>

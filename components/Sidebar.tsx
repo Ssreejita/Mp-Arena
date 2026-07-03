@@ -1,11 +1,12 @@
 'use client';
-
+import { getCitizen } from '@/lib/auth';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Users, 
+  BarChart2,
   GitCompare, 
   Trophy, 
   Search, 
@@ -13,7 +14,8 @@ import {
   MapPin,
   ChevronRight,
   Menu,
-  X
+  X,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { db, MP } from '@/lib/supabase';
@@ -29,7 +31,12 @@ export default function Sidebar({ className }: SidebarProps) {
   const [searchResults, setSearchResults] = useState<MP[]>([]);
   const [allMps, setAllMps] = useState<MP[]>([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+const [citizen, setCitizen] = useState<{ name: string; state: string } | null>(null);
 
+useEffect(() => {
+  const data = getCitizen();
+  if (data) setCitizen(data);
+}, []);
   // Load all MPs for quick search filtering
   useEffect(() => {
     async function loadMps() {
@@ -52,12 +59,15 @@ export default function Sidebar({ className }: SidebarProps) {
     setSearchResults(filtered);
   }, [searchQuery, allMps]);
 
-  const navItems = [
-    { name: 'Home', href: '/', icon: LayoutDashboard },
-    { name: 'MP Listing', href: '/mps', icon: Users },
-    { name: 'Compare MPs', href: '/compare', icon: GitCompare },
-    { name: 'Rankings', href: '/rankings', icon: Trophy },
-  ];
+ const navItems = [
+  { name: 'Home', href: '/', icon: LayoutDashboard },
+  { name: 'MP Listing', href: '/mps', icon: Users },
+  { name: 'Compare MPs', href: '/compare', icon: GitCompare },
+  { name: 'Rankings', href: '/rankings', icon: Trophy },
+  { name: 'Parties', href: '/parties', icon: BarChart2 },
+  { name: 'Methodology', href: '/methodology', icon: FileText },
+  { name: 'My Dashboard', href: '/dashboard', icon: MapPin },
+];
 
   const handleSelectMp = (mpId: string) => {
     setSearchQuery('');
@@ -206,8 +216,8 @@ export default function Sidebar({ className }: SidebarProps) {
               MP
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">Parliament Session 25</p>
-              <p className="text-[10px] text-zinc-500 truncate">Data Feed: Live Mocks</p>
+              <p className="text-xs font-semibold text-zinc-300 truncate">{citizen?.name ?? 'Parliament Session'}</p>
+<p className="text-[10px] text-zinc-500 truncate">{citizen?.state ?? 'Data Feed: Live Mocks'}</p>
             </div>
           </div>
         </div>
