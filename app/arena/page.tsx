@@ -15,26 +15,34 @@ export default function ArenaPage() {
 
   useEffect(() => {
     async function loadData() {
-      const data = await db.getMps();
-      const sorted = [...data].sort(
-        (a, b) => b.overall_score - a.overall_score
-      );
+      try {
+        const data = await db.getMps();
+        console.log("Arena data", data.slice(0,5));
 
-      setMps(sorted);
+        console.log("Arena received:", data.length);
+        console.table(data);
 
-      if (sorted.length > 1) {
-        setMp1Id(sorted[0].id);
-        setMp2Id(sorted[1].id);
+        const sorted = [...data].sort(
+          (a, b) => b.overall_score - a.overall_score
+        );
+
+        setMps(sorted);
+
+        if (sorted.length > 1) {
+          setMp1Id(sorted[0].id);
+          setMp2Id(sorted[1].id);
+        }
+      } catch (e) {
+        console.error("Arena Error:", e);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     loadData();
-  }, []);
+  }, []); // Extra bracket removed from here
 
   const mpOfWeek = mps[0];
-
   const top3 = mps.slice(0, 3);
 
   const mp1 = mps.find((m) => m.id === mp1Id);
@@ -93,7 +101,6 @@ export default function ArenaPage() {
   return (
     <div className="min-h-screen bg-black text-white p-6 space-y-10">
       {/* MP OF THE WEEK */}
-
       {mpOfWeek && (
         <section className="rounded-3xl border border-yellow-500/40 bg-linear-to-r from-yellow-500/10 to-indigo-500/10 p-8">
           <div className="flex items-center gap-3 mb-4">
@@ -131,7 +138,6 @@ export default function ArenaPage() {
       )}
 
       {/* PODIUM */}
-
       <section>
         <h2 className="text-2xl font-bold mb-6">🏆 Top MPs</h2>
 
@@ -166,7 +172,6 @@ export default function ArenaPage() {
       </section>
 
       {/* BATTLE ARENA */}
-
       <section className="rounded-2xl border border-zinc-800 p-6">
         <div className="flex items-center gap-2 mb-6">
           <Swords />
@@ -177,7 +182,7 @@ export default function ArenaPage() {
           <select
             value={mp1Id}
             onChange={(e) => setMp1Id(e.target.value)}
-            className="bg-zinc-900 border border-zinc-700 p-3 rounded-lg"
+            className="bg-zinc-900 border border-zinc-700 p-3 rounded-lg text-white"
           >
             {mps.map((mp) => (
               <option key={mp.id} value={mp.id}>
@@ -189,7 +194,7 @@ export default function ArenaPage() {
           <select
             value={mp2Id}
             onChange={(e) => setMp2Id(e.target.value)}
-            className="bg-zinc-900 border border-zinc-700 p-3 rounded-lg"
+            className="bg-zinc-900 border border-zinc-700 p-3 rounded-lg text-white"
           >
             {mps.map((mp) => (
               <option key={mp.id} value={mp.id}>
@@ -213,7 +218,6 @@ export default function ArenaPage() {
       </section>
 
       {/* FIFA STYLE CARDS */}
-
       <section>
         <h2 className="text-2xl font-bold mb-6">🎮 MP Cards</h2>
 
@@ -258,7 +262,6 @@ export default function ArenaPage() {
       </section>
 
       {/* LEADERBOARD */}
-
       <section>
         <h2 className="text-2xl font-bold mb-4">📈 Leaderboard</h2>
 
@@ -279,7 +282,6 @@ export default function ArenaPage() {
       </section>
 
       {/* FIND MY MP */}
-
       <section className="rounded-2xl border border-zinc-800 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Search />
@@ -290,7 +292,7 @@ export default function ArenaPage() {
           value={constituencySearch}
           onChange={(e) => setConstituencySearch(e.target.value)}
           placeholder="Enter constituency..."
-          className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded-lg"
+          className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded-lg text-white"
         />
 
         {findMp && (
@@ -309,4 +311,4 @@ export default function ArenaPage() {
       </section>
     </div>
   );
-}
+} // Correctly closing ArenaPage function at the end

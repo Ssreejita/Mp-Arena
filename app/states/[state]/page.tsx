@@ -35,11 +35,15 @@ export default function StatePage({
     async function load() {
       try {
         const all = await db.getMps();
+         console.log('decodedState:', decodedState);
+    console.log('unique mp.state values:', [...new Set(all.map(mp => mp.state))].sort());
 
-        const filtered = all.filter(
+
+       const filtered = all.filter(
   (mp) =>
-    mp.state.toLowerCase().replace(/\s+/g, '-') === decodedState.toLowerCase() ||
-    mp.state.toLowerCase() === decodedState.toLowerCase().replace(/-/g, ' ')
+    mp.state &&
+    (mp.state.toLowerCase().replace(/\s+/g, '-') === decodedState.toLowerCase() ||
+     mp.state.toLowerCase() === decodedState.toLowerCase().replace(/-/g, ' '))
 );
 
         setMps(filtered);

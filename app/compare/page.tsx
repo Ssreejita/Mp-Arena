@@ -266,12 +266,18 @@ function WinnerBanner({ mpA, mpB }: { mpA: MP; mpB: MP }) {
 export default function ComparePage() {
   const [allMps, setAllMps] = useState<MP[]>([]);
   const [loading, setLoading] = useState(true);
-  const [idA, setIdA] = useState('mp-1');
-  const [idB, setIdB] = useState('mp-100');
+  const [idA, setIdA] = useState('');
+  const [idB, setIdB] = useState('');
  
 
   useEffect(() => {
-    db.getMps().then(data => { setAllMps(data); setLoading(false); }).catch(() => setLoading(false));
+       db.getMps().then(data => {
+    setAllMps(data);
+    if (data.length > 0) setIdA(data[0].id);
+    if (data.length > 1) setIdB(data[1].id);
+    setLoading(false);
+  }).catch(() => setLoading(false));
+    
   }, []);
 
   if (loading) {
@@ -386,12 +392,12 @@ export default function ComparePage() {
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{label}</p>
                   <p className="text-sm font-black text-foreground">{mp.name}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {mp.top_topics.map(t => (
+                    {(mp.top_topics || []).map(t => (
                       <span key={t} className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ background: `${color}15`, color, border: `1px solid ${color}30` }}>
                         {t}
                       </span>
                     ))}
-                    {mp.top_topics.length === 0 && <span className="text-[10px] text-muted-foreground">No focus data</span>}
+             {(!mp.top_topics || mp.top_topics.length === 0) && <span className="text-[10px] text-muted-foreground">No focus data</span>}
                   </div>
                 </div>
               ))}

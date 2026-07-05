@@ -44,8 +44,10 @@ export default function DashboardPage() {
     if (!selectedState) return;
     setLoading(true);
     db.getMps().then(all => {
+      console.log('selectedState:', selectedState);
+   console.log('sample mp.state values:', [...new Set(all.map(mp => mp.state))]);
       const filtered = all.filter(mp =>
-        mp.state.toLowerCase() === selectedState.toLowerCase()
+       mp.state && mp.state.toLowerCase() === selectedState.toLowerCase()
       );
       setStateMps(filtered);
       setLoading(false);

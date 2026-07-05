@@ -49,23 +49,16 @@ export interface MPTopic {
 export interface MPBill {
   id: string;
   mp_id: string;
-
   title: string;
-
   description?: string;
   objective?: string;
   key_provisions?: string;
-
   status: string;
-
   bill_type?: string;
   current_stage?: string;
-
   sponsor_type?: string;
-
   date_introduced?: string;
   passed_date?: string;
-
   bill_pdf?: string;
   source_url?: string;
 }
@@ -73,63 +66,44 @@ export interface MPBill {
 export interface MPQuestion {
   id: string;
   mp_id: string;
-
   question_number?: number;
   question_type?: string;
   answer_type?: string;
-
   ministry?: string;
   ministry_name?: string;
-
   session?: string;
   loksabha_session?: string;
   parliament_number?: string;
-
   category: string;
-
   question_text: string;
   response_text?: string;
   full_answer?: string;
-
   date: string;
   answer_date?: string;
-
   question_pdf?: string;
   answer_pdf?: string;
-
   source_url?: string;
   prs_url?: string;
-
   keywords?: string[];
+  official_url?: string; 
+  link?: string;
 }
+
 export interface MPDebate {
   id: string;
   mp_id: string;
-
   title: string;
-
   debate_type?: string;
-
   ministry?: string;
-
   topic?: string;
-
   session?: string;
-
   house?: string;
-
   date: string;
-
   contributions_count: number;
-
   speech_snippet?: string;
-
   full_transcript?: string;
-
   transcript_url?: string;
-
   video_url?: string;
-
   prs_url?: string;
 }
 
@@ -142,15 +116,14 @@ export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey) 
   : null;
 
-// ==========================================
-// MOCK DATA SET (High-fidelity simulated DB)
-// ==========================================
+console.log("Supabase URL:", supabaseUrl);
+console.log("Supabase Key exists:", !!supabaseAnonKey);
+console.log("Supabase client created:", !!supabase);
 
 // ==========================================
 // REAL DATA — 18th Lok Sabha (544 MPs)
 // ==========================================
-
-import mpDataRaw from './mp-data-enriched.json'
+import mpDataRaw from './mp-data-enriched.json';
 
 const MOCK_MPS: MP[] = (mpDataRaw as any[]).map(mp => ({
   ...mp,
@@ -165,9 +138,6 @@ const MOCK_MPS: MP[] = (mpDataRaw as any[]).map(mp => ({
 
 const MOCK_HISTORIES: MPPerformanceHistory[] = [];
 const MOCK_TOPICS: MPTopic[] = [];
-const MOCK_BILLS: MPBill[] = [];
-const MOCK_QUESTIONS: MPQuestion[] = [];
-const MOCK_DEBATES: MPDebate[] = [];
 
 // Seed topics from real topic_scores data
 MOCK_MPS.forEach(mp => {
@@ -177,15 +147,15 @@ MOCK_MPS.forEach(mp => {
         id: `topic-${mp.id}-${tIdx}`,
         mp_id: mp.id,
         topic_name: topic,
-        score: Math.min(100, Math.round((score as number / 10) * 10)), // normalize
+        score: Math.min(100, Math.round(((score as number) / 10) * 10)), // normalize
       });
     });
   }
 });
+
 // ==========================================
 // DATA ACCESS LAYER (Fallback Enabled)
 // ==========================================
-
 export const db = {
   /**
    * Get list of all MPs with search and filter options
@@ -207,10 +177,9 @@ export const db = {
         if (filters?.search) {
           query = query.or(`name.ilike.%${filters.search}%,constituency.ilike.%${filters.search}%`);
         }
-       // Add after line ~98
-if (filters?.party && filters.party !== 'All') {
-  query = query.ilike('party', `%${filters.party}%`);
-}
+        if (filters?.party && filters.party !== 'All') {
+          query = query.ilike('party', `%${filters.party}%`);
+        }
         if (filters?.region && filters.region !== 'All') {
           query = query.eq('region', filters.region);
         }
@@ -229,8 +198,14 @@ if (filters?.party && filters.party !== 'All') {
         query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
         const { data, error } = await query;
-        if (!error && data) return data as MP[];
-        console.error('Supabase getMps error, falling back to mock:', error);
+
+console.log("========== getMps ==========");
+console.log("Supabase Error:", error);
+console.log("Rows Returned:", data?.length);
+console.table(data?.slice(0, 5));
+if (!error && data) {
+       return data.map((mp: any) => ({ ...mp, state: mp.region })) as MP[];
+    }
       } catch (err) {
         console.error('Supabase query error, falling back to mock:', err);
       }
@@ -250,8 +225,8 @@ if (filters?.party && filters.party !== 'All') {
     }
 
     if (filters?.party && filters.party !== 'All') {
-  result = result.filter(mp => mp.party.toLowerCase().includes(filters.party!.toLowerCase()));
-}
+      result = result.filter(mp => mp.party.toLowerCase().includes(filters.party!.toLowerCase()));
+    }
 
     if (filters?.region && filters.region !== 'All') {
       result = result.filter(mp => mp.region === filters.region);
@@ -272,12 +247,12 @@ if (filters?.party && filters.party !== 'All') {
     const sortBy = filters?.sortBy || 'overall_score';
     const sortOrder = filters?.sortOrder || 'desc';
     result.sort((a, b) => {
-     const valA = a[sortBy] as string | number;
-const valB = b[sortBy] as string | number;
-if (typeof valA === 'string' && typeof valB === 'string') {
-  return sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-}
-return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as number) - (valA as number);
+      const valA = a[sortBy] as string | number;
+      const valB = b[sortBy] as string | number;
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        return sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+      return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as number) - (valA as number);
     });
 
     return result;
@@ -290,7 +265,7 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
     if (supabase) {
       try {
         const { data, error } = await supabase.from('mps').select('*').eq('id', id).single();
-        if (!error && data) return data as MP;
+       if (!error && data) return { ...data, state: data.region } as MP;
         console.error('Supabase getMpById error, falling back to mock:', error);
       } catch (err) {
         console.error('Supabase query error, falling back to mock:', err);
@@ -320,20 +295,19 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
   /**
    * Get an MP's topic breakdown scores
    */
-  async getMpTopics(mpId: string) {
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.from('mp_topics').select('*').eq('mp_id', mpId);
-        if (!error && data) return data as MPTopic[];
-        console.error('Supabase getMpTopics error, falling back to mock:', error);
-      } catch (err) {
-        console.error('Supabase query error, falling back to mock:', err);
-      }
-    }
+ async getMpTopics(mpId: string) {
+  if (supabase) {
+    const { data } = await supabase
+      .from("mp_topics")
+      .select("*")
+      .eq("mp_id", mpId);
 
-    return MOCK_TOPICS.filter(t => t.mp_id === mpId);
-  },
-/**
+    return data || [];
+  }
+
+  return [];
+},
+  /**
    * Get MP comparison — this MP vs state average vs India average
    */
   async getMpComparison(mpId: string) {
@@ -369,6 +343,7 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
       },
     };
   },
+
   /**
    * Get an MP's bills
    */
@@ -383,94 +358,127 @@ return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as numb
       }
     }
 
-const mp = MOCK_MPS.find(m => m.id === mpId) as any;
-return (mp?._bills || []).sort((a: any, b: any) => b.date_introduced.localeCompare(a.date_introduced));
+    const mp = MOCK_MPS.find(m => m.id === mpId) as any;
+    return (mp?._bills || []).sort((a: any, b: any) => b.date_introduced.localeCompare(a.date_introduced));
   },
-async getBillById(billId: string) {
 
-  if (supabase) {
+  async getBillById(billId: string) {
+    if (supabase) {
+      const { data } = await supabase
+        .from("mp_bills")
+        .select("*")
+        .eq("id", billId)
+        .single();
 
-    const { data } = await supabase
-      .from("mp_bills")
-      .select("*")
-      .eq("id", billId)
-      .single();
+      return data;
+    }
 
-    return data;
+    return null;
+  },
+
+  /**
+ * Get an MP's questions
+ */
+async getMpQuestions(mpId: string) {
+  console.log("====================================");
+  console.log("getMpQuestions() CALLED");
+  console.log("Searching questions for mp_id:", mpId);
+
+  const { data, error } = await supabase!
+    .from("mp_questions")
+    .select("*")
+    .eq("mp_id", mpId);
+
+  if (error) {
+    console.error("Supabase Error:", error);
+  } else {
+    console.log("Rows returned:", data?.length);
+    console.log("Questions:", data);
   }
 
-  return null;
+  return data || [];
 },
-  /**
-   * Get an MP's questions
-   */
-  async getMpQuestions(mpId: string) {
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.from('mp_questions').select('*').eq('mp_id', mpId).order('date', { ascending: false });
-        if (!error && data) return data as MPQuestion[];
-        console.error('Supabase getMpQuestions error, falling back to mock:', error);
-      } catch (err) {
-        console.error('Supabase query error, falling back to mock:', err);
-      }
-    }
-const mp = MOCK_MPS.find(m => m.id === mpId) as any;
-return (mp?._questions || []).sort((a: any, b: any) => b.date.localeCompare(a.date));
-  },
-  async getQuestionById(questionId: string) {
+async getQuestionById(questionId: string) {
+  if (!supabase) return null;
 
-  if (supabase) {
-
-    const { data } = await supabase
+  try {
+    const { data, error } = await supabase
       .from("mp_questions")
       .select("*")
       .eq("id", questionId)
       .single();
 
-    return data;
-  }
+    console.log("Question:", data);
 
-  return null;
+    if (error) {
+      console.error("Question error:", error.message, error);
+      return null;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("getQuestionById exception:", err);
+    return null;
+  }
 },
 
   /**
-   *  MP's debates
+   * Get an MP's debates
    */
   async getMpDebates(mpId: string) {
-    
     if (supabase) {
       try {
-        const { data, error } = await supabase.from('mp_debates').select('*').eq('mp_id', mpId).order('date', { ascending: false });
-        if (!error && data) return data as MPDebate[];
-        console.error('Supabase getMpDebates error, falling back to mock:', error);
+        const { data, error } = await supabase
+          .from("mp_debates")
+          .select("*")
+          .eq("mp_id", mpId)
+          .order("date", { ascending: false });
+
+        if (error) {
+          console.error("mp_debates:", error.message, error);
+        } else {
+          console.log("Debates:", data);
+          return data as MPDebate[];
+        }
       } catch (err) {
-        console.error('Supabase query error, falling back to mock:', err);
+        console.error("getMpDebates exception:", err);
       }
     }
 
-    const mp = MOCK_MPS.find(m => m.id === mpId) as any;
-    return (mp?._debates || []).sort((a: any, b: any) => b.date.localeCompare(a.date));
+    const mp = MOCK_MPS.find((m) => m.id === mpId) as any;
+    return (mp?._debates || []).sort((a: any, b: any) =>
+      b.date.localeCompare(a.date)
+    );
   },
-async getDebateById(debateId: string) {
 
-  if (supabase) {
+  async getDebateById(debateId: string) {
+    if (!supabase) return null;
 
-    const { data } = await supabase
-      .from("mp_debates")
-      .select("*")
-      .eq("id", debateId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("mp_debates")
+        .select("*")
+        .eq("id", debateId)
+        .single();
 
-    return data;
-  }
+      console.log("Debate:", data);
 
-  return null;
-},
+      if (error) {
+        console.error("Debate error:", error.message, error);
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error("getDebateById exception:", err);
+      return null;
+    }
+  },
+
   /**
    * Get aggregated insights for home page
    */
   async getAggregatedInsights() {
-    // If Supabase is connected, we could run complex SQL, but for ease and speed we will aggregate here
     const mps = await this.getMps();
     const activeMps = mps.filter(m => m.status === 'Active');
     

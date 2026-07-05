@@ -16,23 +16,43 @@ export default function MpQuestionsPage() {
   const [questions, setQuestions] = useState<MPQuestion[]>([]);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    async function loadQuestionsData() {
-      try {
-        const mpData = await db.getMpById(id);
-        if (!mpData) return;
-        setMp(mpData);
+ useEffect(() => {
+  async function loadQuestionsData() {
+    try {
+      console.log("====================================");
+      console.log("Route ID:", id);
 
-        const qData = await db.getMpQuestions(id);
-        setQuestions(qData);
-      } catch (err) {
-        console.error('Error loading questions:', err);
-      } finally {
-        setLoading(false);
+      const mpData = await db.getMpById(id);
+
+      console.log("MP loaded from DB:", mpData);
+
+      if (!mpData) {
+        console.log("No MP found!");
+        return;
       }
+
+      setMp(mpData);
+
+      console.log("Calling getMpQuestions...");
+      console.log("MP ID being sent:", id);
+
+      const qData = await db.getMpQuestions(id);
+
+      console.log("Questions returned:", qData);
+      console.log("Number of questions:", qData.length);
+
+      setQuestions(qData);
+    } catch (err) {
+      console.error("Error loading questions:", err);
+    } finally {
+      setLoading(false);
     }
-    if (id) loadQuestionsData();
-  }, [id]);
+  }
+
+  if (id) {
+    loadQuestionsData();
+  }
+}, [id]);
 
   const filteredQuestions = questions.filter(q =>
     q.question_text.toLowerCase().includes(search.toLowerCase()) ||
@@ -86,34 +106,30 @@ export default function MpQuestionsPage() {
       <div className="space-y-4">
         {filteredQuestions.length > 0 ? (
           filteredQuestions.map((q) => (
-  <Link
-    key={q.id}
-    href={`/mps/${id}/questions/${q.id}`}
-  >
-    <div className="p-5 rounded-xl bg-zinc-900/30 border border-zinc-900 hover:border-violet-500 hover:bg-zinc-900/50 transition-all cursor-pointer space-y-3">
-              <div className="flex flex-wrap items-center gap-3 text-[10px] font-medium">
-                <span className="flex items-center gap-1 text-zinc-500">
-                  <Calendar className="h-3 w-3" />
-                  {q.date || 'Unknown Date'}
-                </span>
-                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-400">
-                  <Tag className="h-2.5 w-2.5" />
-                  {q.category}
-                </span>
+            <Link
+  key={q.id}
+  href={`/mps/${id}/questions/${q.id}`}
+  className="block no-underline"
+>
+              <div className="p-5 rounded-xl bg-zinc-900/30 border border-zinc-900 hover:border-violet-500 hover:bg-zinc-900/50 transition-all cursor-pointer space-y-3">
+                <div className="flex flex-wrap items-center gap-3 text-[10px] font-medium">
+                  <span className="flex items-center gap-1 text-zinc-500">
+                    <Calendar className="h-3 w-3" />
+                    {q.date || 'Unknown Date'}
+                  </span>
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-400">
+                    <Tag className="h-2.5 w-2.5" />
+                    {q.question_type}
+                  </span>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-zinc-200 leading-snug">
+                    Q: {q.question_text}
+                  </h3>
+                 
+                </div>
               </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-zinc-200 leading-snug">
-                  Q: {q.question_text}
-                </h3>
-                {q.response_text && (
-                  <div className="text-xs text-zinc-400 bg-zinc-900/50 p-3 rounded-lg border border-zinc-900/80 leading-relaxed">
-                    <span className="font-bold text-zinc-500 block mb-1">Answer:</span>
-                    {q.response_text}
-                  </div>
-                )}
-              </div>
-            </div>
             </Link>
           ))
         ) : (
