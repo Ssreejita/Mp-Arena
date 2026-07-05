@@ -214,7 +214,7 @@ export default function MpDashboardPage() {
 
   const filteredBills = bills.filter(b =>
     b.title.toLowerCase().includes(tabSearch.toLowerCase()) ||
-    b.description.toLowerCase().includes(tabSearch.toLowerCase())
+   (b.description ?? "").toLowerCase().includes(tabSearch.toLowerCase())
   );
   const filteredQuestions = questions.filter(q =>
     q.question_text.toLowerCase().includes(tabSearch.toLowerCase()) ||

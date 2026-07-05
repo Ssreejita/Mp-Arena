@@ -43,7 +43,7 @@ export default function MpBillsPage() {
 
       return (
         bill.title.toLowerCase().includes(value) ||
-        bill.description.toLowerCase().includes(value) ||
+       bill.description?.toLowerCase().includes(value) ||
         bill.status.toLowerCase().includes(value)
       );
     });
