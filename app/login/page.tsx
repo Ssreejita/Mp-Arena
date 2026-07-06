@@ -36,15 +36,20 @@ export default function LoginPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (!validate()) return;
-    localStorage.setItem('loklens_citizen', JSON.stringify({
+ const handleSubmit = () => {
+  if (!validate()) return;
+
+  localStorage.setItem(
+    "loklens_citizen",
+    JSON.stringify({
       ...form,
       loggedIn: true,
       loginTime: new Date().toISOString(),
-    }));
-    router.push('/dashboard');
-  };
+    })
+  );
+
+  router.push("/");
+};
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">

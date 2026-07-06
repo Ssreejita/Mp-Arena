@@ -50,17 +50,11 @@ export interface MPBill {
   id: string;
   mp_id: string;
   title: string;
-  description?: string;
-  objective?: string;
-  key_provisions?: string;
-  status: string;
-  bill_type?: string;
-  current_stage?: string;
-  sponsor_type?: string;
-  date_introduced?: string;
-  passed_date?: string;
-  bill_pdf?: string;
-  source_url?: string;
+  prs_bill_page_url: string;
+
+  description?: string | null;
+  status?: string | null;
+  date_introduced?: string | null;
 }
 
 export interface MPQuestion {

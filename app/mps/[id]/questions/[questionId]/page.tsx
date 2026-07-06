@@ -12,7 +12,7 @@ interface Props {
 
 export default async function QuestionDetailsPage({ params }: Props) {
   const { id, questionId } = await params;
-
+console.log("Question ID from URL:", questionId);
   const question = await db.getQuestionById(questionId);
 
   if (!question) {
@@ -58,17 +58,17 @@ export default async function QuestionDetailsPage({ params }: Props) {
         Answer text isn't available in this dataset yet.
       </div>
 
-      {question.source && (
-        <a
-          href={question.source}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300"
-        >
-          <FileText className="h-3.5 w-3.5" />
-          View Original PDF
-        </a>
-      )}
+     {question.source_url && (
+  <a
+    href={question.source_url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300"
+  >
+    <FileText className="h-3.5 w-3.5" />
+    View Original Source
+  </a>
+)}
     </div>
   );
 }

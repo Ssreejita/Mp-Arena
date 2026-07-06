@@ -169,7 +169,20 @@ const handleStateClick = (state: string) => {
   }, 600);
 };
   
-  
+  useEffect(() => {
+  const stored = localStorage.getItem("loklens_citizen");
+
+  if (!stored) {
+    router.push("/login");
+    return;
+  }
+
+  const user = JSON.parse(stored);
+
+  if (!user.loggedIn) {
+    router.push("/login");
+  }
+}, [router]);
   
   useEffect(() => {
     async function load() {

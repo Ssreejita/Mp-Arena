@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   FileText,
   Search,
-  Calendar
 } from 'lucide-react';
 
 import { db, MPBill } from '@/lib/supabase';
@@ -38,15 +37,11 @@ export default function MpBillsPage() {
   }, [id]);
 
   const filteredBills = useMemo(() => {
-    return bills.filter((bill) => {
-      const value = search.toLowerCase();
+    const value = search.toLowerCase();
 
-      return (
-        bill.title.toLowerCase().includes(value) ||
-       bill.description?.toLowerCase().includes(value) ||
-        bill.status.toLowerCase().includes(value)
-      );
-    });
+    return bills.filter((bill) =>
+      bill.title.toLowerCase().includes(value)
+    );
   }, [bills, search]);
 
   if (loading) {
@@ -99,10 +94,9 @@ export default function MpBillsPage() {
 
         {filteredBills.map((bill) => (
 
-          <Link
+          <div
             key={bill.id}
-            href={`/mps/${id}/bills/${bill.id}`}
-            className="block rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-indigo-500 hover:bg-zinc-900/60 transition"
+            className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-indigo-500 hover:bg-zinc-900/60 transition"
           >
 
             <div className="flex items-start gap-4">
@@ -117,20 +111,27 @@ export default function MpBillsPage() {
                   {bill.title}
                 </h2>
 
-                <p className="text-sm text-zinc-400 mt-2 line-clamp-3">
-                  {bill.description}
+                <p className="text-sm text-zinc-400 mt-2">
+                  No description available.
                 </p>
 
-                <div className="flex flex-wrap gap-3 mt-4">
+                <div className="flex gap-4 mt-4">
 
-                  <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs text-amber-400">
-                    {bill.status}
-                  </span>
+                  <Link
+                    href={`/mps/${id}/bills/${bill.id}`}
+                    className="text-sm text-amber-400 hover:underline"
+                  >
+                    View Details →
+                  </Link>
 
-                  <span className="flex items-center gap-1 text-xs text-zinc-500">
-                    <Calendar className="h-3 w-3" />
-                    {bill.date_introduced}
-                  </span>
+                  <a
+                    href={bill.prs_bill_page_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-indigo-400 hover:underline"
+                  >
+                    View on PRS ↗
+                  </a>
 
                 </div>
 
@@ -138,7 +139,7 @@ export default function MpBillsPage() {
 
             </div>
 
-          </Link>
+          </div>
 
         ))}
 
