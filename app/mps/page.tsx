@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from "next/image";
+import { PARTY_SYMBOLS } from "@/lib/partysymbols";
 
 import { 
   Search, 
@@ -17,6 +19,7 @@ import {
 } from 'lucide-react';
 import { db, MP } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+;
 
 export default function MpListingPage() {
   const [loading, setLoading] = useState(true);
@@ -233,19 +236,23 @@ export default function MpListingPage() {
                 </div>
 
                 {/* Party & Office Status Badges */}
-                <div className="flex flex-wrap gap-2">
-                  <span className={cn("text-[9px] px-2 py-0.5 rounded border font-semibold uppercase", getPartyBg(mp.party))}>
-                    {mp.party}
-                  </span>
-                  <span className={cn(
-                    "text-[9px] px-2 py-0.5 rounded border font-semibold uppercase",
-                    mp.status === 'Active' 
-                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                      : 'bg-zinc-500/10 border-zinc-550/20 text-muted-foreground'
-                  )}>
-                    {mp.status}
-                  </span>
-                </div>
+              <div
+  className={cn(
+    "flex items-center gap-1 text-[9px] px-2 py-1 rounded border font-semibold",
+    getPartyBg(mp.party)
+  )}
+>
+  <div className="w-5 h-5 rounded-full bg-white ring-1 ring-border flex items-center justify-center shrink-0 overflow-hidden">
+    <Image
+      src={PARTY_SYMBOLS[mp.party] || PARTY_SYMBOLS["Independent"]}
+      alt={mp.party}
+      width={16}
+      height={16}
+      className="object-contain"
+    />
+  </div>
+  <span className="truncate">{mp.party}</span>
+</div>
 
                 {/* Substats Panel */}
                 <div className="grid grid-cols-3 gap-2 bg-background/40 p-3 rounded-lg border border-border/60">

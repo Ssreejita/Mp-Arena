@@ -67,6 +67,7 @@ useEffect(() => {
   { name: 'Parties', href: '/parties', icon: BarChart2 },
   { name: 'Methodology', href: '/methodology', icon: FileText },
   { name: 'My Dashboard', href: '/dashboard', icon: MapPin },
+  { name: 'Election Compare', href: '/election', icon: Users },
 ];
 
   const handleSelectMp = (mpId: string) => {
