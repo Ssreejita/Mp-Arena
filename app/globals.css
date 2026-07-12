@@ -224,7 +224,8 @@ body {
 /* Clean up the dropdown widget itself */
 #google_translate_element .goog-te-gadget {
   font-family: inherit;
-  font-size: 0;
+  font-size: 13px;
+  color: var(--muted-foreground);
 }
 #google_translate_element .goog-te-gadget-simple {
   background: transparent;
