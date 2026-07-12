@@ -135,10 +135,7 @@ useEffect(() => {
         </div>
 {/* Language Selector */}
 
-{/* Google Translate Widget */}
-<div className="px-4 pt-2">
-  <GoogleTranslate />
-</div>
+
         {/* Global Search */}
         <div className="p-4 relative">
           <div className="relative">
@@ -228,6 +225,10 @@ useEffect(() => {
           </div>
         </div>
       </aside>
+      {/* Google Translate Widget */}
+<div className="px-4 pt-2">
+  <GoogleTranslate />
+</div>
     </>
   );
 }

@@ -139,6 +139,20 @@ select option {
   color: #ffffff !important;
 }
 }
+/* Global mobile safety net */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+img, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 /*BASE STYLES */
 html,

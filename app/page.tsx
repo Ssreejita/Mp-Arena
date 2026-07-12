@@ -24,6 +24,7 @@ interface AggregatedInsights {
   partyStats: { name: string; count: number; avgScore: number }[];
 }
 
+
 // KPI Card 
 function KpiCard({ icon, label, value, sub, iconColor, trend }: {
   icon: React.ReactNode; label: string; value: string | number;
@@ -265,18 +266,9 @@ const handleStateClick = (state: string) => {
 </div>
         </div>
       </div>
-
-      {/*  KPI CARDS  */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={<Users className="h-4 w-4" />} label={t.totalMps} value={topMps.length > 0 ? '544' : '—'} sub={t.lokSabha18th} iconColor="text-indigo-400" />
-        <KpiCard icon={<Clock className="h-4 w-4" />} label={t.avgAttendance} value={insights ? `${insights.avgAttendance}%` : '—'} sub={t.excDemocracy} iconColor="text-emerald-400" trend="up" />
-        <KpiCard icon={<MessageSquare className="h-4 w-4" />} label={t.totalQuestions} value={insights?.totalQuestions.toLocaleString() ?? '—'} sub={t.oralWritten} iconColor="text-violet-400" />
-        <KpiCard icon={<FileText className="h-4 w-4" />} label={t.billsSponsored} value={insights?.totalBills ?? '—'} sub={t.privateBills} iconColor="text-amber-400" />
-      </div>
-
-
-         
-{/* ── EXPLORE DASHBOARD CTA ───────────────────────────────────────── */}
+    
+           
+      {/* ── EXPLORE DASHBOARD CTA ───────────────────────────────────────── */}
       <div className="relative rounded-2xl overflow-hidden border border-border bg-card">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(99,102,241,0.12),transparent_60%)]" />
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 px-8 sm:px-10 py-12">
@@ -319,6 +311,20 @@ const handleStateClick = (state: string) => {
           </div>
         </div>
       </div>
+
+      {/*  KPI CARDS  */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard icon={<Users className="h-4 w-4" />} label={t.totalMps} value={topMps.length > 0 ? '544' : '—'} sub={t.lokSabha18th} iconColor="text-indigo-400" />
+        <KpiCard icon={<Clock className="h-4 w-4" />} label={t.avgAttendance} value={insights ? `${insights.avgAttendance}%` : '—'} sub={t.excDemocracy} iconColor="text-emerald-400" trend="up" />
+        <KpiCard icon={<MessageSquare className="h-4 w-4" />} label={t.totalQuestions} value={insights?.totalQuestions.toLocaleString() ?? '—'} sub={t.oralWritten} iconColor="text-violet-400" />
+        <KpiCard icon={<FileText className="h-4 w-4" />} label={t.billsSponsored} value={insights?.totalBills ?? '—'} sub={t.privateBills} iconColor="text-amber-400" />
+      </div>
+
+
+         
+
+
+          
           
           
 

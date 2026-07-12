@@ -2,6 +2,7 @@
 import { useLanguage } from '@/context/LanguageContext';
 import { use, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+
 import {
   ArrowLeft,
   Users,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { db, MP } from '@/lib/supabase';
+import ConstituencyMap from '@/components/ConstituencyMap';
 
 function getTierStyle(percentile: number) {
   if (percentile >= 80) return { bar: 'bg-blue-600', text: 'text-blue-400', label: 'Top 20%', bg: 'bg-blue-500/10', ring: 'ring-blue-500/20' };
@@ -226,6 +228,7 @@ export default function StatePage({
           <p className="text-sm text-muted-foreground">
             Performance ranking of all constituencies in {decodedState}
           </p>
+          <ConstituencyMap stateName={decodedState} mps={mpsWithTier} />
         </div>
 
         <div className="relative">
