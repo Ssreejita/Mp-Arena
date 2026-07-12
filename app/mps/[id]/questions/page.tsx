@@ -72,7 +72,7 @@ export default function MpQuestionsPage() {
       {/* Back to Dashboard */}
       <Link
         href={`/mps/${id}`}
-        className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-indigo-400 text-xs font-semibold transition-colors"
+        className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-indigo-400 text-xs font-semibold transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         <span>Back to {mp?.name || 'MP'}'s Dashboard</span>
@@ -80,24 +80,24 @@ export default function MpQuestionsPage() {
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <MessageSquare className="h-6 w-6 text-violet-400" />
             Questions Raised
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Complete legislative question history for {mp?.name} ({mp?.constituency})
           </p>
         </div>
 
         {/* Search Input */}
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search question text..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-9 pr-4 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 w-full md:w-64"
+            className="pl-9 pr-4 py-2 text-sm bg-card border border-border rounded-lg text-foreground placeholder-zinc-600 focus:outline-none focus:border-indigo-500 w-full md:w-64"
           />
         </div>
       </div>
@@ -111,9 +111,9 @@ export default function MpQuestionsPage() {
   href={`/mps/${id}/questions/${q.id}`}
   className="block no-underline"
 >
-              <div className="p-5 rounded-xl bg-zinc-900/30 border border-zinc-900 hover:border-violet-500 hover:bg-zinc-900/50 transition-all cursor-pointer space-y-3">
+              <div className="p-5 rounded-xl bg-card border border-zinc-900 hover:border-violet-500 hover:bg-card/50 transition-all cursor-pointer space-y-3">
                 <div className="flex flex-wrap items-center gap-3 text-[10px] font-medium">
-                  <span className="flex items-center gap-1 text-zinc-500">
+                  <span className="flex items-center gap-1 text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     {q.date || 'Unknown Date'}
                   </span>
@@ -124,7 +124,7 @@ export default function MpQuestionsPage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-zinc-200 leading-snug">
+                  <h3 className="text-sm font-semibold text-foreground leading-snug">
                     Q: {q.question_text}
                   </h3>
                  
@@ -133,7 +133,7 @@ export default function MpQuestionsPage() {
             </Link>
           ))
         ) : (
-          <div className="text-center py-12 text-zinc-500 text-sm">
+          <div className="text-center py-12 text-muted-foreground text-sm">
             No matching questions found.
           </div>
         )}

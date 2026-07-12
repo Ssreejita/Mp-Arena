@@ -90,7 +90,7 @@ export default function PartiesPage() {
     <div className="space-y-8 max-w-7xl mx-auto w-full">
 
       {/* Back */}
-      <Link href="/" className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-indigo-400 text-xs font-semibold transition-colors">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-indigo-400 text-xs font-semibold transition-colors">
         <ArrowLeft className="h-4 w-4" />
         Back to Home
       </Link>
@@ -118,7 +118,7 @@ export default function PartiesPage() {
               'px-3 py-1.5 rounded-lg text-xs font-bold transition-colors',
               sortBy === opt.key
                 ? 'bg-indigo-600 text-white'
-                : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-zinc-800'
+                : 'bg-card text-muted-foreground hover:text-foreground border border-border'
             )}
           >
             {opt.label}
@@ -148,7 +148,7 @@ export default function PartiesPage() {
 
             {/* Seat bar */}
             <div className="space-y-1">
-              <div className="h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-card rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-700"
                   style={{ width: `${(party.count / maxCount) * 100}%` }}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -18,6 +19,7 @@ interface CitizenData {
 }
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [citizen, setCitizen] = useState<CitizenData | null>(null);
   const [stateMps, setStateMps] = useState<MP[]>([]);
@@ -105,9 +107,9 @@ export default function DashboardPage() {
 
         {/* Welcome */}
         <div className="rounded-2xl border border-border bg-card p-6">
-          <p className="text-xs text-indigo-400 font-bold uppercase tracking-widest mb-1">Welcome back</p>
+          <p className="text-xs text-indigo-400 font-bold uppercase tracking-widest mb-1">{t.welcomeBack}</p>
           <h1 className="text-2xl font-black text-foreground">
-            {citizen.name}, <span className="text-muted-foreground font-normal text-lg">here's your Parliament snapshot</span>
+            {citizen.name}, <span className="text-muted-foreground font-normal text-lg">{t.parliamentSnapshot}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5" />
@@ -123,7 +125,7 @@ export default function DashboardPage() {
             {/* State selector */}
             {/* India Map */}
 <div className="bg-card border border-border rounded-xl p-3 space-y-2">
-  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">Click your state</p>
+  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">{t.clickYourState}</p>
   <IndiaMap
     selectedState={selectedState}
     onStateClick={(state) => {
@@ -156,14 +158,14 @@ export default function DashboardPage() {
             {/* Party breakdown */}
             {!loading && parties.length > 0 && (
               <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Party Breakdown</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{t.partyBreakdown}</p>
                 {parties.slice(0, 5).map(([party, count]) => (
                   <div key={party} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-foreground font-semibold truncate max-w-[160px]">{party}</span>
                       <span className="text-muted-foreground shrink-0">{count} MPs</span>
                     </div>
-                    <div className="h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-card rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full bg-indigo-500 transition-all duration-700"
                         style={{ width: `${(count / stateMps.length) * 100}%` }}
@@ -221,7 +223,7 @@ export default function DashboardPage() {
                     <Link
                       key={mp.id}
                       href={`/mps/${mp.id}`}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-background border border-border hover:border-indigo-500/30 hover:bg-zinc-900/40 transition-all group"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-background border border-border hover:border-indigo-500/30 hover:bg-card/40 transition-all group"
                     >
                       <img src={mp.image_url} alt={mp.name} className="w-10 h-10 rounded-full object-cover border border-border shrink-0" />
                       <div className="flex-1 min-w-0">

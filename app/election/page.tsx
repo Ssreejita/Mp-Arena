@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { 
@@ -38,7 +39,7 @@ function MiniBar({ value, max, color }: { value: number; max: number; color: str
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs font-bold text-foreground w-8 text-right shrink-0">{value}</span>
-      <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-card rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${max > 0 ? (value / max) * 100 : 0}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -57,6 +58,7 @@ function InsightRow({ icon, color, text }: { icon: React.ReactNode; color: strin
 }
 
 export default function ElectionComparePage() {
+  const { t } = useLanguage();
   const [allMps, setAllMps] = useState<MP[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<MP[]>([]);
@@ -202,7 +204,7 @@ export default function ElectionComparePage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[500px]">
         <div className="w-10 h-10 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
-        <span className="mt-3 text-xs text-muted-foreground font-medium">Loading candidate data...</span>
+        <span className="mt-3 text-xs text-muted-foreground font-medium">{t.loadingCandidateData}</span>
       </div>
     );
   }
@@ -212,8 +214,8 @@ export default function ElectionComparePage() {
 
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-black tracking-tight text-foreground">Election Candidate Comparison</h1>
-        <p className="text-sm text-muted-foreground">Select up to 5 candidates to compare their past performance in Parliament</p>
+        <h1 className="text-3xl font-black tracking-tight text-foreground">{t.electionCandComp}</h1>
+        <p className="text-sm text-muted-foreground">{t.selectUpTo5}</p>
       </div>
 
       {/* Candidate Selector */}
@@ -242,7 +244,7 @@ export default function ElectionComparePage() {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-border bg-card hover:border-indigo-500/50 transition-colors text-muted-foreground hover:text-indigo-400"
             >
               <Plus className="h-4 w-4" />
-              <span className="text-xs font-bold">Add Candidate</span>
+              <span className="text-xs font-bold">{t.addCandidate}</span>
               <span className="text-[9px] text-muted-foreground">(Max 5)</span>
             </button>
 
@@ -252,7 +254,7 @@ export default function ElectionComparePage() {
                   <input
                     autoFocus
                     type="text"
-                    placeholder="Search MP by name, constituency, party..."
+                    placeholder={t.searchMpByName}
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-indigo-500"
@@ -295,8 +297,8 @@ export default function ElectionComparePage() {
       {selected.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 border border-dashed border-border rounded-2xl space-y-3">
           <Users className="h-12 w-12 text-muted-foreground/30" />
-          <p className="text-sm font-bold text-muted-foreground">Add candidates to start comparing</p>
-          <p className="text-xs text-muted-foreground">Search and select up to 6 MPs to compare their parliamentary performance</p>
+          <p className="text-sm font-bold text-muted-foreground">{t.addCandidatesToStart}</p>
+          <p className="text-xs text-muted-foreground">{t.searchAndSelect}</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -304,7 +306,7 @@ export default function ElectionComparePage() {
           {/* Overview KPI Cards */}
           {avgStats && (
             <div>
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Overview (Average Performance)</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">{t.overviewAvg}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                 {[
                   { icon: <MessageSquare className="h-6 w-6 text-indigo-400" />, label: 'Questions Asked', value: avgStats.questions, color: 'bg-indigo-500/10' },
@@ -330,18 +332,18 @@ export default function ElectionComparePage() {
           {/* Key Metrics Comparison Table */}
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             <div className="px-6 py-4 border-b border-border">
-              <h2 className="text-sm font-black text-foreground">Key Metrics Comparison</h2>
+              <h2 className="text-sm font-black text-foreground">{t.keyMetricsComp}</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left px-6 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Candidate</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Questions</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Debates</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Bills</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Attendance</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Score</th>
+                    <th className="text-left px-6 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t.candidate}</th>
+                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">{t.questions}</th>
+                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">{t.debates}</th>
+                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">{t.bills}</th>
+                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">{t.attendanceTracker}</th>
+                    <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">{t.score}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -375,10 +377,10 @@ export default function ElectionComparePage() {
                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: CANDIDATE_COLORS[i] }} />
                       <p className="text-xs font-bold text-foreground truncate">{mp.name}</p>
                     </div>
-                    <p className="text-[10px] text-muted-foreground">State: <span className="text-foreground font-bold">{mp.state}</span></p>
-                    <p className="text-[10px] text-muted-foreground">Term: <span className="text-foreground font-bold">{mp.term}</span></p>
-                    <p className="text-[10px] text-muted-foreground">Age: <span className="text-foreground font-bold">{mp.age ?? '—'}</span></p>
-                    <p className="text-[10px] text-muted-foreground">Education: <span className="text-foreground font-bold">{mp.education ?? '—'}</span></p>
+                    <p className="text-[10px] text-muted-foreground">{t.state} <span className="text-foreground font-bold">{mp.state}</span></p>
+                    <p className="text-[10px] text-muted-foreground">{t.term} <span className="text-foreground font-bold">{mp.term}</span></p>
+                    <p className="text-[10px] text-muted-foreground">{t.age} <span className="text-foreground font-bold">{mp.age ?? '—'}</span></p>
+                    <p className="text-[10px] text-muted-foreground">{t.education} <span className="text-foreground font-bold">{mp.education ?? '—'}</span></p>
                   </div>
                 ))}
               </div>
@@ -394,7 +396,7 @@ export default function ElectionComparePage() {
 
             {/* Performance Radar */}
             <div className="bg-card border border-border rounded-xl p-5 space-y-3">
-              <h2 className="text-sm font-black text-foreground">Performance Radar</h2>
+              <h2 className="text-sm font-black text-foreground">{t.perfRadar}</h2>
               <ResponsiveContainer width="100%" height={260}>
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="#27272a" />
@@ -411,7 +413,7 @@ export default function ElectionComparePage() {
 
             {/* Activity Distribution */}
             <div className="bg-card border border-border rounded-xl p-5 space-y-3">
-              <h2 className="text-sm font-black text-foreground">Activity Distribution <span className="text-muted-foreground font-normal text-xs">(Average)</span></h2>
+              <h2 className="text-sm font-black text-foreground">{t.activityDist} <span className="text-muted-foreground font-normal text-xs">{t.avg}</span></h2>
               <div className="flex items-center gap-4">
                 <ResponsiveContainer width="60%" height={200}>
                   <PieChart>
@@ -438,7 +440,7 @@ export default function ElectionComparePage() {
             {/* Best Performer */}
             {bestIn && (
               <div className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h2 className="text-sm font-black text-foreground">Best Performer In</h2>
+                <h2 className="text-sm font-black text-foreground">{t.bestPerformerIn}</h2>
                 <div className="space-y-2">
                   {[
                     { label: 'Questions', mp: bestIn.questions, icon: <MessageSquare className="h-3.5 w-3.5" />, color: 'text-indigo-400' },
@@ -467,7 +469,7 @@ export default function ElectionComparePage() {
 
             {/* Party-wise bar chart */}
             <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5 space-y-4">
-              <h2 className="text-sm font-black text-foreground">Party-wise Average Comparison</h2>
+              <h2 className="text-sm font-black text-foreground">{t.partyWiseAvg}</h2>
               {partyComparison.length > 0 ? (
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={partyComparison} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
@@ -476,26 +478,26 @@ export default function ElectionComparePage() {
                     <YAxis stroke="#888888" fontSize={9} />
                     <Tooltip contentStyle={{ backgroundColor: '#121214', borderColor: '#27272a', borderRadius: '8px', color: '#f4f4f5', fontSize: '10px' }} />
                     <Legend wrapperStyle={{ fontSize: '10px' }} />
-                    <Bar dataKey="Questions" fill="#6366f1" radius={[3, 3, 0, 0]} />
-                    <Bar dataKey="Debates" fill="#f43f5e" radius={[3, 3, 0, 0]} />
-                    <Bar dataKey="Bills" fill="#f59e0b" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey={t.questions} fill="#6366f1" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey={t.debates} fill="#f43f5e" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey={t.bills} fill="#f59e0b" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-xs text-muted-foreground">Add candidates from different parties to see comparison</p>
+                <p className="text-xs text-muted-foreground">{t.addCandidatesFromDiff}</p>
               )}
-              <p className="text-[9px] text-muted-foreground">* Based on selected candidates only</p>
+              <p className="text-[9px] text-muted-foreground">{t.basedOnSelected}</p>
             </div>
 
             {/* Key Insights */}
             <div className="bg-card border border-border rounded-xl p-5 space-y-3">
-              <h2 className="text-sm font-black text-foreground">Key Insights</h2>
+              <h2 className="text-sm font-black text-foreground">{t.keyInsights}</h2>
               <div className="space-y-2">
                 {insights.map((ins, i) => (
                   <InsightRow key={i} icon={ins.icon} color={ins.color} text={ins.text} />
                 ))}
                 {insights.length === 0 && (
-                  <p className="text-xs text-muted-foreground">Add at least 2 candidates to see insights</p>
+                  <p className="text-xs text-muted-foreground">{t.addAtLeast2}</p>
                 )}
               </div>
             </div>

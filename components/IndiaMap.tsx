@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { geoMercator, geoPath } from "d3-geo";
 import { useRouter } from "next/navigation";
+import { MapPin } from "lucide-react";
 
 let cachedGeoData: GeoJSONData | null = null;
 
@@ -84,10 +85,42 @@ if (!geoData || !pathGenerator) {
   );
 }
 
+const stateNames = geoData.features
+  .map((f) => f.properties?.NAME_1)
+  .filter((n): n is string => !!n)
+  .sort((a, b) => a.localeCompare(b));
+
+const handleSelectChange = (stateName: string) => {
+  if (!stateName) return;
+  onStateClick?.(stateName);
+  const slug = stateName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .toLowerCase();
+  router.push(`/states/${slug}`);
+};
+
 return (
   <div
     className={`rounded-2xl border border-border bg-card p-4 shadow-sm ${className}`}
   >
+    <div className="mb-4 relative">
+      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">
+        Or search your state
+      </label>
+      <select
+        value=""
+        onChange={(e) => handleSelectChange(e.target.value)}
+        className="w-full rounded-lg border border-border bg-background py-2.5 px-3 text-sm text-foreground focus:outline-none focus:border-indigo-500/50 cursor-pointer"
+      >
+        <option value="">Select a state...</option>
+        {stateNames.map((name) => (
+          <option key={name} value={name}>{name}</option>
+        ))}
+      </select>
+    </div>
+
     <svg
       viewBox="0 0 800 900"
       className="w-full h-auto"
@@ -145,12 +178,12 @@ console.log(stateName, svgPath);
 
     {hoveredState && (
       <div className="mt-4 flex justify-center">
-        <div className="rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300">
+        <div className="flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300">
+          <MapPin className="h-3.5 w-3.5" />
           {hoveredState}
         </div>
       </div>
     )}
-
     {selectedState && (
       <div className="mt-4 flex items-center justify-between rounded-xl border border-border bg-muted/50 p-4">
         <div>

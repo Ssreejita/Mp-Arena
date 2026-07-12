@@ -256,7 +256,7 @@ export default function HomePage() {
                   "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-black",
                   move > 0 ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
                     : move < 0 ? "bg-red-500/10 border border-red-500/20 text-red-400"
-                    : "bg-zinc-800 border border-zinc-700 text-zinc-400"
+                    : "bg-border border border-zinc-700 text-zinc-400"
                 )}>
                   {move > 0 ? <TrendingUp className="h-3 w-3" /> : move < 0 ? <TrendingDown className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
                   {move > 0 ? `+${move}` : move < 0 ? `${move}` : 'Steady'} this week
@@ -320,7 +320,7 @@ export default function HomePage() {
           { icon: <MessageSquare className="h-4 w-4" />, val: totalQ, suffix: '', label: 'Total Questions', color: 'text-violet-400' },
           { icon: <FileText className="h-4 w-4" />, val: totalBills, suffix: '', label: 'Bills Sponsored', color: 'text-amber-400' },
         ].map((s, i) => (
-          <div key={s.label} className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-4 text-center space-y-1">
+          <div key={s.label} className="rounded-2xl bg-card border border-zinc-800/60 p-4 text-center space-y-1">
             <div className={cn("flex justify-center", s.color)}>{s.icon}</div>
             <p className="text-2xl font-black text-white">
               <CountUp to={s.val} duration={1200 + i * 150} suffix={s.suffix} />
@@ -369,7 +369,7 @@ export default function HomePage() {
               <Link
                 key={mp.id}
                 href={`/mps/${mp.id}`}
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-zinc-900/30 border border-zinc-800/40 hover:border-indigo-500/30 hover:bg-zinc-900/60 transition-all group"
+                className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-card border border-zinc-800/40 hover:border-indigo-500/30 hover:bg-card/40 transition-all group"
               >
                 {/* Rank */}
                 <span className="text-sm font-black text-white/20 w-5 text-center shrink-0">#{rank}</span>
@@ -394,7 +394,7 @@ export default function HomePage() {
 
                 {/* Score bar */}
                 <div className="hidden sm:flex items-center gap-2 shrink-0 w-28">
-                  <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-card rounded-full overflow-hidden">
                     <div className="h-full bg-indigo-500/60 rounded-full" style={{ width: `${mp.overall_score}%` }} />
                   </div>
                   <span className="text-xs font-black text-indigo-400 w-8 text-right">{mp.overall_score}</span>
@@ -404,57 +404,109 @@ export default function HomePage() {
           })}
         </div>
       </section>
+      {/* ── EXPLORE DASHBOARD CTA ───────────────────────────────────────── */}
+<section className="relative rounded-3xl overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-[#0b0b18] via-[#090912] to-[#07070d]">
 
-      {/* ── BATTLE ARENA CTA ────────────────────────────────────────────────── */}
-      <section className="relative rounded-3xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 via-[#0a0a14] to-rose-900/20" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(99,102,241,0.12),transparent)]" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
-        <ScanLines />
+  {/* Background Glow */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(99,102,241,0.15),transparent_60%)]" />
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_50%,rgba(79,70,229,0.12),transparent_55%)]" />
 
-        {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-3xl" />
-        <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-rose-500/30 rounded-tr-3xl" />
-        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-indigo-500/20 rounded-bl-3xl" />
-        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-rose-500/20 rounded-br-3xl" />
+  {/* Border Glow */}
+  <div className="absolute inset-0 rounded-3xl border border-indigo-500/10" />
 
-        <div className="relative z-10 flex flex-col items-center text-center gap-6 py-16 px-8">
-          {/* VS badge */}
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-              <Swords className="h-5 w-5 text-indigo-400" />
-            </div>
-            <span className="text-2xl font-black text-white/20">VS</span>
-            <div className="w-10 h-10 rounded-full bg-rose-500/20 border border-rose-500/30 flex items-center justify-center">
-              <Swords className="h-5 w-5 text-rose-400 scale-x-[-1]" />
-            </div>
-          </div>
+  <ScanLines />
 
-          <div className="space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Enter the Battle Arena</h2>
-            <p className="text-sm text-white/40 max-w-md">
-              Pick any two MPs from all 544 members. Compare head-to-head across every metric. See who wins.
-            </p>
-          </div>
+  <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 px-10 py-14">
 
-          <Link
-            href="/compare"
-            className="group flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-black text-white transition-all hover:scale-105 relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
-              boxShadow: '0 0 40px rgba(99,102,241,0.4)'
-            }}
-          >
-            <Swords className="h-5 w-5" />
-            Start MP Battle
-            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Link>
+    {/* LEFT SIDE */}
+    <div className="max-w-xl">
 
-          <p className="text-[10px] text-white/20 font-medium">
-            544 MPs · Real parliamentary data · 18th Lok Sabha
-          </p>
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-5">
+
+        <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+
+        <span className="text-xs uppercase tracking-[0.25em] font-bold text-indigo-300">
+          Interactive Dashboard
+        </span>
+
+      </div>
+
+      <h2 className="text-4xl font-black text-white leading-tight">
+        Explore India's Parliamentary Landscape
+      </h2>
+
+      <p className="mt-5 text-zinc-400 leading-7">
+        Dive into the interactive dashboard to explore MPs state-wise,
+        analyze attendance, questions, debates, bills,
+        and discover parliamentary insights across all 544 Members of Parliament.
+      </p>
+
+      {/* Feature Pills */}
+
+      <div className="flex flex-wrap gap-3 mt-8">
+
+        <div className="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm">
+          🇮🇳 28 States
         </div>
-      </section>
+
+        <div className="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm">
+          🏛 8 UTs
+        </div>
+
+        <div className="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm">
+          👥 544 MPs
+        </div>
+
+        <div className="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm">
+          📊 Live Insights
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* RIGHT SIDE */}
+
+    <div className="flex flex-col items-center">
+
+      {/* Temporary Illustration */}
+
+      <div className="w-80 h-52 rounded-3xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-transparent flex items-center justify-center">
+
+        <div className="text-center">
+
+          <div className="text-7xl mb-4">
+            🗺️
+          </div>
+
+          <p className="text-indigo-300 font-bold">
+            Interactive India Map
+          </p>
+
+        </div>
+
+      </div>
+
+      <Link
+        href="/dashboard"
+        className="mt-8 inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-white transition-all hover:scale-105"
+        style={{
+          background:
+            "linear-gradient(135deg,#4f46e5,#6366f1)",
+          boxShadow:
+            "0 0 35px rgba(99,102,241,.45)"
+        }}
+      >
+        Open Dashboard
+        <ArrowRight className="h-5 w-5" />
+      </Link>
+
+    </div>
+
+  </div>
+
+</section>
+
     </div>
   );
 }

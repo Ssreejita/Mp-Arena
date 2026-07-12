@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
@@ -21,6 +22,7 @@ import { cn } from '@/lib/utils';
 type RankingMetric = 'overall_score' | 'attendance_rate' | 'questions_count' | 'debates_count' | 'bills_sponsored';
 
 export default function RankingsPage() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [mps, setMps] = useState<MP[]>([]);
   const [activeMetric, setActiveMetric] = useState<RankingMetric>('overall_score');
@@ -83,7 +85,7 @@ export default function RankingsPage() {
       <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
           <Trophy className="h-7 w-7 text-indigo-400" />
-          <span>Performance Rankings</span>
+          <span>{t.perfRankings}</span>
         </h1>
         <p className="text-muted-foreground text-sm">
           National legislative leaderboard parsed by activity density, voting attendance, bills sponsored, and questions.
@@ -118,7 +120,7 @@ export default function RankingsPage() {
         {loading ? (
           <div className="py-32 flex flex-col items-center justify-center">
             <div className="w-10 h-10 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
-            <span className="mt-3 text-xs text-muted-foreground">Calculating standings...</span>
+            <span className="mt-3 text-xs text-muted-foreground">{t.calcStandings}</span>
           </div>
         ) : mps.length > 0 ? (
           <div className="overflow-x-auto">
@@ -126,11 +128,11 @@ export default function RankingsPage() {
 >
               <thead>
                 <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-card/30">
-                  <th className="py-4 px-6 text-center w-16">Rank</th>
-                  <th className="py-4 px-4">Member Profile</th>
-                  <th className="py-4 px-4">Constituency</th>
-                  <th className="py-4 px-4">Party Affiliation</th>
-                  <th className="py-4 px-4 text-center">Score Card</th>
+                  <th className="py-4 px-6 text-center w-16">{t.rank}</th>
+                  <th className="py-4 px-4">{t.memberProfile}</th>
+                  <th className="py-4 px-4">{t.constituency}</th>
+                  <th className="py-4 px-4">{t.partyAffiliation}</th>
+                  <th className="py-4 px-4 text-center">{t.scoreCard}</th>
                   <th className="py-4 px-6 text-right w-44">{currentMetricInfo.label}</th>
                 </tr>
               </thead>
@@ -218,7 +220,7 @@ export default function RankingsPage() {
             </table>
           </div>
         ) : (
-          <div className="py-16 text-center text-muted-foreground text-xs font-medium">No standings data available</div>
+          <div className="py-16 text-center text-muted-foreground text-xs font-medium">{t.noStandingsData}</div>
         )}
       </div>
 
@@ -228,7 +230,7 @@ export default function RankingsPage() {
           <Sparkles className="h-6 w-6" />
         </div>
         <div className="space-y-1 text-center sm:text-left flex-1">
-          <h4 className="text-sm font-bold text-foreground">How is rank determined?</h4>
+          <h4 className="text-sm font-bold text-foreground">{t.howIsRank}</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Standings are computed in real-time based on the sorted values of the active filter metric. In cases of identical scores, members share the higher rank index position. Ranks represent activity volumes, not policy outcomes.
           </p>

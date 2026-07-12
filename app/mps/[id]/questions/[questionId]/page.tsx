@@ -20,10 +20,10 @@ console.log("Question ID from URL:", questionId);
   }
 
   return (
-    <div className="max-w-3xl mx-auto w-full p-6 space-y-6 text-zinc-100">
+    <div className="max-w-3xl mx-auto w-full p-6 space-y-6 text-foreground">
       <Link
         href={`/mps/${id}/questions`}
-        className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-indigo-400 text-xs font-semibold transition-colors"
+        className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-indigo-400 text-xs font-semibold transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         <span>Back to Questions</span>
@@ -31,7 +31,7 @@ console.log("Question ID from URL:", questionId);
 
       <div className="space-y-3 border-b border-zinc-900 pb-5">
         <div className="flex flex-wrap items-center gap-3 text-[10px] font-medium">
-          <span className="flex items-center gap-1 text-zinc-500">
+          <span className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="h-3 w-3" />
             {question.date || "Unknown Date"}
           </span>
@@ -42,19 +42,19 @@ console.log("Question ID from URL:", questionId);
             </span>
           )}
           {(question.ministry_name || question.ministry) && (
-            <span className="flex items-center gap-1 text-zinc-500">
+            <span className="flex items-center gap-1 text-muted-foreground">
               <Landmark className="h-3 w-3" />
               {question.ministry_name || question.ministry}
             </span>
           )}
         </div>
 
-        <h1 className="text-2xl font-bold text-zinc-100 leading-snug">
+        <h1 className="text-2xl font-bold text-foreground leading-snug">
           {question.question_text}
         </h1>
       </div>
 
-      <div className="text-sm text-zinc-500 italic">
+      <div className="text-sm text-muted-foreground italic">
         Answer text isn't available in this dataset yet.
       </div>
 

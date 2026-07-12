@@ -77,7 +77,7 @@ export default function LoginPage() {
           {/* Step indicator */}
           <div className="flex items-center gap-2">
             {[1, 2].map(s => (
-              <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${step >= s ? 'bg-indigo-500' : 'bg-zinc-800'}`} />
+              <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${step >= s ? 'bg-indigo-500' : 'bg-border'}`} />
             ))}
           </div>
 
@@ -175,11 +175,11 @@ export default function LoginPage() {
     <select
       value={form.state}
       onChange={(e) => setForm({ ...form, state: e.target.value })}
-      className="w-full appearance-none bg-background dark:bg-zinc-900 border border-border dark:border-zinc-700 rounded-xl py-2.5 pl-9 pr-10 text-sm text-foreground dark:text-white focus:outline-none focus:border-indigo-500 transition-colors dark:[color-scheme:dark]"
+      className="w-full appearance-none bg-background dark:bg-muted border border-border dark:border-zinc-700 rounded-xl py-2.5 pl-9 pr-10 text-sm text-foreground dark:text-white focus:outline-none focus:border-indigo-500 transition-colors dark:[color-scheme:dark]"
     >
       <option
         value=""
-        className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+        className="bg-white text-black dark:bg-muted dark:text-white"
       >
         Select your state
       </option>
@@ -188,7 +188,7 @@ export default function LoginPage() {
         <option
           key={s}
           value={s}
-          className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+          className="bg-white text-black dark:bg-muted dark:text-white"
         >
           {s}
         </option>

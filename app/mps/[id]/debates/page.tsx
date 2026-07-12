@@ -63,7 +63,7 @@ export default function MpDebatesPage() {
       {/* Back */}
       <Link
         href={`/mps/${id}`}
-        className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-indigo-400"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-indigo-400"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to MP Dashboard
@@ -71,24 +71,24 @@ export default function MpDebatesPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-zinc-100">
+        <h1 className="text-3xl font-bold text-foreground">
           Parliamentary Debates
         </h1>
 
-        <p className="text-zinc-400 mt-1">
+        <p className="text-muted-foreground mt-1">
           {debates.length} Contributions
         </p>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
 
         <input
           placeholder="Search debates..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+          className="w-full pl-10 pr-4 py-3 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-indigo-500"
         />
       </div>
 
@@ -96,7 +96,7 @@ export default function MpDebatesPage() {
       <div className="space-y-4">
 
         {filteredDebates.length === 0 && (
-          <div className="text-center py-20 text-zinc-500">
+          <div className="text-center py-20 text-muted-foreground">
             No debates found.
           </div>
         )}
@@ -106,7 +106,7 @@ export default function MpDebatesPage() {
           <Link
             key={debate.id}
             href={`/mps/${id}/debates/${debate.id}`}
-            className="block rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-indigo-500 hover:bg-zinc-900/60 transition"
+            className="block rounded-xl border border-border bg-card p-5 hover:border-indigo-500 hover:bg-card transition"
           >
 
             <div className="flex items-start gap-4">
@@ -117,19 +117,19 @@ export default function MpDebatesPage() {
 
               <div className="flex-1">
 
-                <h2 className="text-lg font-semibold text-zinc-100">
+                <h2 className="text-lg font-semibold text-foreground">
                   {debate.title}
                 </h2>
 
                 {debate.speech_snippet && (
-                  <p className="text-sm text-zinc-400 mt-2 italic line-clamp-3">
+                  <p className="text-sm text-muted-foreground mt-2 italic line-clamp-3">
                     "{debate.speech_snippet}"
                   </p>
                 )}
 
                 <div className="flex flex-wrap gap-3 mt-4">
 
-                  <span className="flex items-center gap-1 text-xs text-zinc-500">
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     {debate.date}
                   </span>

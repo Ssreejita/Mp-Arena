@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from "next/image";
@@ -22,6 +23,7 @@ import { cn } from '@/lib/utils';
 ;
 
 export default function MpListingPage() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [mps, setMps] = useState<MP[]>([]);
   
@@ -87,7 +89,7 @@ export default function MpListingPage() {
       case 'SNP': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400';
       case 'Liberal Democrat': return 'bg-orange-500/10 border-orange-500/20 text-orange-400';
       case 'Green': return 'bg-green-500/10 border-green-500/20 text-green-400';
-      default: return 'bg-zinc-500/10 border-zinc-500/20 text-muted-foreground';
+      default: return 'bg-card-500/10 border-zinc-500/20 text-muted-foreground';
     }
   };
 
@@ -95,7 +97,7 @@ export default function MpListingPage() {
     <div className="space-y-8 max-w-7xl mx-auto w-full">
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Member Directory</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{t.memberDir}</h1>
         <p className="text-muted-foreground text-sm">
           Browse, filter, and compare the activity levels and scores of all sitting and former Members of Parliament.
         </p>
@@ -106,7 +108,7 @@ export default function MpListingPage() {
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
             <SlidersHorizontal className="h-4 w-4 text-indigo-400" />
-            <span>Search Filters</span>
+            <span>{t.searchFilters}</span>
           </div>
           <button 
             onClick={clearFilters}
@@ -119,7 +121,7 @@ export default function MpListingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {/* Search */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Search Name/Seat</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t.searchNameSeat}</label>
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <input
@@ -140,7 +142,7 @@ export default function MpListingPage() {
               onChange={(e) => setParty(e.target.value)}
               className="w-full bg-background border border-border rounded-lg py-2 px-3 text-xs text-foreground focus:outline-none focus:border-indigo-500/50"
             >
-              <option value="All">All Parties</option>
+              <option value="All">{t.allParties}</option>
               {parties.map(p => (
                 <option key={p} value={p}>{p}</option>
               ))}
@@ -155,7 +157,7 @@ export default function MpListingPage() {
               onChange={(e) => setRegion(e.target.value)}
               className="w-full bg-background border border-border rounded-lg py-2 px-3 text-xs text-foreground focus:outline-none focus:border-indigo-500/50"
             >
-              <option value="All">All Regions</option>
+              <option value="All">{t.allRegions}</option>
               {regions.map(r => (
                 <option key={r} value={r}>{r}</option>
               ))}
@@ -164,30 +166,30 @@ export default function MpListingPage() {
 
           {/* Status */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Office Status</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t.officeStatus}</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className="w-full bg-background border border-border rounded-lg py-2 px-3 text-xs text-foreground focus:outline-none focus:border-indigo-500/50"
             >
-              <option value="All">All Statuses</option>
-              <option value="Active">Active MPs</option>
-              <option value="Inactive">Former MPs</option>
+              <option value="All">{t.allStatuses}</option>
+              <option value="Active">{t.activeMps}</option>
+              <option value="Inactive">{t.formerMps}</option>
             </select>
           </div>
 
           {/* Sort By */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sort Metric</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t.sortMetric}</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               className="w-full bg-background border border-border rounded-lg py-2 px-3 text-xs text-foreground focus:outline-none focus:border-indigo-500/50"
             >
-              <option value="overall_score">Overall Score</option>
-              <option value="attendance_rate">Attendance Rate</option>
-              <option value="questions_count">Questions Asked</option>
-              <option value="bills_sponsored">Bills Sponsored</option>
+              <option value="overall_score">{t.overallScore}</option>
+              <option value="attendance_rate">{t.attendanceRate}</option>
+              <option value="questions_count">{t.totalQuestions}</option>
+              <option value="bills_sponsored">{t.billsSponsored}</option>
             </select>
           </div>
         </div>
@@ -197,7 +199,7 @@ export default function MpListingPage() {
       {loading ? (
         <div className="py-24 flex flex-col items-center justify-center">
           <div className="w-10 h-10 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
-          <span className="mt-3 text-xs text-muted-foreground">Filtering database...</span>
+          <span className="mt-3 text-xs text-muted-foreground">{t.filteringDb}</span>
         </div>
       ) : mps.length > 0 ? (
         /* MP Directory Grid */
@@ -228,7 +230,7 @@ export default function MpListingPage() {
 
                   {/* Performance Circle */}
                   <div className="text-center shrink-0">
-                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block">Score</span>
+                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block">{t.score}</span>
                     <div className="mt-0.5 px-2.5 py-1 bg-background border border-border rounded-lg text-sm font-bold text-indigo-400 group-hover:border-indigo-500/35 transition-all">
                       {mp.overall_score}
                     </div>
@@ -265,7 +267,7 @@ export default function MpListingPage() {
                     <span className="text-xs font-bold text-foreground">{mp.questions_count}</span>
                   </div>
                   <div className="text-center">
-                    <span className="text-[9px] text-muted-foreground block uppercase font-medium">Bills Sp.</span>
+                    <span className="text-[9px] text-muted-foreground block uppercase font-medium">{t.billsSp}</span>
                     <span className="text-xs font-bold text-foreground">{mp.bills_sponsored}</span>
                   </div>
                 </div>
@@ -276,7 +278,7 @@ export default function MpListingPage() {
                 href={`/mps/${mp.id}`}
                 className="w-full py-3 bg-background/40 border-t border-border text-center text-xs font-bold text-muted-foreground group-hover:bg-indigo-600 group-hover:text-white hover:text-white transition-all flex items-center justify-center gap-1.5"
               >
-                <span>Access Performance Profile</span>
+                <span>{t.accessProfile}</span>
                 <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
@@ -285,7 +287,7 @@ export default function MpListingPage() {
       ) : (
         /* Empty State */
         <div className="py-20 border border-dashed border-border rounded-xl text-center space-y-3">
-          <p className="text-sm text-muted-foreground font-medium">No Members of Parliament found matching your filters.</p>
+          <p className="text-sm text-muted-foreground font-medium">{t.noMpsFoundMatching}</p>
           <button 
             onClick={clearFilters}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg text-white transition-colors"

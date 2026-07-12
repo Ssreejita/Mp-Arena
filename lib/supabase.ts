@@ -175,7 +175,7 @@ export const db = {
           query = query.ilike('party', `%${filters.party}%`);
         }
         if (filters?.region && filters.region !== 'All') {
-          query = query.eq('region', filters.region);
+          query = query.ilike('region', `%${filters.region}%`);
         }
         if (filters?.status && filters.status !== 'All') {
           query = query.eq('status', filters.status);

@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { db, MP } from '@/lib/supabase';
+import GoogleTranslate from '@/components/GoogleTranslate';
+import { useLanguage, Language } from "@/context/LanguageContext";
 
 interface SidebarProps {
   className?: string;
@@ -32,7 +34,7 @@ export default function Sidebar({ className }: SidebarProps) {
   const [allMps, setAllMps] = useState<MP[]>([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 const [citizen, setCitizen] = useState<{ name: string; state: string } | null>(null);
-
+const { language, setLanguage, t } = useLanguage();
 useEffect(() => {
   const data = getCitizen();
   if (data) setCitizen(data);
@@ -60,16 +62,14 @@ useEffect(() => {
   }, [searchQuery, allMps]);
 
  const navItems = [
-  { name: 'Home', href: '/', icon: LayoutDashboard },
-  { name: 'MP Listing', href: '/mps', icon: Users },
-  { name: 'Compare MPs', href: '/compare', icon: GitCompare },
-  { name: 'Rankings', href: '/rankings', icon: Trophy },
-  { name: 'Parties', href: '/parties', icon: BarChart2 },
-  { name: 'Methodology', href: '/methodology', icon: FileText },
-  { name: 'My Dashboard', href: '/dashboard', icon: MapPin },
-  { name: 'Election Compare', href: '/election', icon: Users },
+  { name: t.home, href: "/", icon: LayoutDashboard },
+  { name: t.listing, href: "/mps", icon: Users },
+  { name: t.rankings, href: "/rankings", icon: Trophy },
+  { name: t.parties, href: "/parties", icon: BarChart2 },
+  { name: t.methodology, href: "/methodology", icon: FileText },
+  { name: t.dashboard, href: "/dashboard", icon: MapPin },
+  { name: t.election, href: "/election", icon: Users },
 ];
-
   const handleSelectMp = (mpId: string) => {
     setSearchQuery('');
     setSearchResults([]);
@@ -133,7 +133,12 @@ useEffect(() => {
            MP Tracker
           </span>
         </div>
+{/* Language Selector */}
 
+{/* Google Translate Widget */}
+<div className="px-4 pt-2">
+  <GoogleTranslate />
+</div>
         {/* Global Search */}
         <div className="p-4 relative">
           <div className="relative">

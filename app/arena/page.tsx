@@ -92,7 +92,7 @@ export default function ArenaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-zinc-300">
+      <div className="min-h-screen flex items-center justify-center text-foreground">
         Loading Arena...
       </div>
     );
@@ -118,7 +118,7 @@ export default function ArenaPage() {
             <div>
               <h2 className="text-4xl font-bold">{mpOfWeek.name}</h2>
 
-              <p className="text-zinc-400">
+              <p className="text-muted-foreground">
                 {mpOfWeek.party} • {mpOfWeek.constituency}
               </p>
 
@@ -145,7 +145,7 @@ export default function ArenaPage() {
           {top3.map((mp, index) => (
             <div
               key={mp.id}
-              className="rounded-2xl border border-zinc-800 p-6 bg-zinc-900"
+              className="rounded-2xl border border-border p-6 bg-card"
             >
               <div className="text-3xl mb-2">
                 {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
@@ -159,7 +159,7 @@ export default function ArenaPage() {
 
               <h3 className="text-center mt-3 font-bold">{mp.name}</h3>
 
-              <p className="text-center text-zinc-400 text-sm">
+              <p className="text-center text-muted-foreground text-sm">
                 {mp.party}
               </p>
 
@@ -172,7 +172,7 @@ export default function ArenaPage() {
       </section>
 
       {/* BATTLE ARENA */}
-      <section className="rounded-2xl border border-zinc-800 p-6">
+      <section className="rounded-2xl border border-border p-6">
         <div className="flex items-center gap-2 mb-6">
           <Swords />
           <h2 className="text-2xl font-bold">Battle Arena</h2>
@@ -182,7 +182,7 @@ export default function ArenaPage() {
           <select
             value={mp1Id}
             onChange={(e) => setMp1Id(e.target.value)}
-            className="bg-zinc-900 border border-zinc-700 p-3 rounded-lg text-white"
+            className="bg-card border border-zinc-700 p-3 rounded-lg text-white"
           >
             {mps.map((mp) => (
               <option key={mp.id} value={mp.id}>
@@ -194,7 +194,7 @@ export default function ArenaPage() {
           <select
             value={mp2Id}
             onChange={(e) => setMp2Id(e.target.value)}
-            className="bg-zinc-900 border border-zinc-700 p-3 rounded-lg text-white"
+            className="bg-card border border-zinc-700 p-3 rounded-lg text-white"
           >
             {mps.map((mp) => (
               <option key={mp.id} value={mp.id}>
@@ -210,7 +210,7 @@ export default function ArenaPage() {
               {battleResult.winner.name} wins
             </div>
 
-            <div className="mt-2 text-zinc-400">
+            <div className="mt-2 text-muted-foreground">
               Score {battleResult.score1} - {battleResult.score2}
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function ArenaPage() {
           {mps.slice(0, 12).map((mp) => (
             <div
               key={mp.id}
-              className="rounded-2xl border border-indigo-500/30 bg-zinc-900 p-5"
+              className="rounded-2xl border border-indigo-500/30 bg-card p-5"
             >
               <div className="text-3xl font-bold text-yellow-400">
                 {mp.overall_score}
@@ -269,7 +269,7 @@ export default function ArenaPage() {
           {mps.slice(0, 10).map((mp, index) => (
             <div
               key={mp.id}
-              className="flex justify-between items-center bg-zinc-900 p-4 rounded-lg"
+              className="flex justify-between items-center bg-card p-4 rounded-lg"
             >
               <div>
                 #{index + 1} {mp.name}
@@ -282,7 +282,7 @@ export default function ArenaPage() {
       </section>
 
       {/* FIND MY MP */}
-      <section className="rounded-2xl border border-zinc-800 p-6">
+      <section className="rounded-2xl border border-border p-6">
         <div className="flex items-center gap-2 mb-4">
           <Search />
           <h2 className="text-2xl font-bold">Find My MP</h2>
@@ -292,14 +292,14 @@ export default function ArenaPage() {
           value={constituencySearch}
           onChange={(e) => setConstituencySearch(e.target.value)}
           placeholder="Enter constituency..."
-          className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded-lg text-white"
+          className="w-full bg-card border border-zinc-700 p-3 rounded-lg text-white"
         />
 
         {findMp && (
-          <div className="mt-6 bg-zinc-900 p-4 rounded-xl">
+          <div className="mt-6 bg-card p-4 rounded-xl">
             <div className="font-bold text-xl">{findMp.name}</div>
 
-            <div className="text-zinc-400">
+            <div className="text-muted-foreground">
               {findMp.party} • {findMp.constituency}
             </div>
 

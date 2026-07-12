@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
@@ -43,7 +44,7 @@ function StatBar({
       </div>
       <div className="flex items-center gap-1 h-2">
         {/* Left bar (A) — fills right to left */}
-        <div className="flex-1 bg-zinc-900 rounded-full overflow-hidden flex justify-end">
+        <div className="flex-1 bg-card rounded-full overflow-hidden flex justify-end">
           <div
             className="h-full rounded-full transition-all duration-1000 ease-out"
             style={{ width: `${pctA}%`, background: winner === 'A' ? 'linear-gradient(90deg, #6366f1, #818cf8)' : '#3f3f46' }}
@@ -55,7 +56,7 @@ function StatBar({
           winner === 'tie' ? 'bg-amber-400' : winner === 'A' ? 'bg-indigo-400' : 'bg-rose-400'
         )} />
         {/* Right bar (B) — fills left to right */}
-        <div className="flex-1 bg-zinc-900 rounded-full overflow-hidden">
+        <div className="flex-1 bg-card rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-1000 ease-out"
             style={{ width: `${pctB}%`, background: winner === 'B' ? 'linear-gradient(90deg, #fb7185, #f43f5e)' : '#3f3f46' }}
@@ -77,6 +78,7 @@ function MPSelector({
   color: string;
   accentClass: string;
 }) {
+  const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -98,7 +100,7 @@ function MPSelector({
   return (
     <div className={cn(
       "flex-1 rounded-2xl border-2 p-5 space-y-4 relative transition-all",
-      selected ? `border-opacity-60 bg-background/60` : "border-zinc-800 bg-background/30 border-dashed"
+      selected ? `border-opacity-60 bg-background/60` : "border-border bg-background/30 border-dashed"
     )} style={{ borderColor: selected ? color : undefined }} ref={ref}>
 
       {/* Slot label */}
@@ -151,7 +153,7 @@ function MPSelector({
       {/* Dropdown trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-zinc-800 bg-muted text-xs text-muted-foreground hover:border-zinc-600 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-border bg-muted text-xs text-muted-foreground hover:border-zinc-600 transition-colors"
       >
         <span>{selected ? 'Change MP' : 'Choose MP'}</span>
         <ChevronDown className="h-3.5 w-3.5" />
@@ -159,17 +161,17 @@ function MPSelector({
 
       {/* Dropdown panel */}
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-background border border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
+        <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-background border border-border rounded-xl shadow-2xl overflow-hidden">
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
               <input
                 autoFocus
                 type="text"
-                placeholder="Search MP, party, constituency..."
+                placeholder={t.searchMpParty}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-1.5 pl-8 pr-3 text-xs text-foreground placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
+                className="w-full bg-card border border-border rounded-lg py-1.5 pl-8 pr-3 text-xs text-foreground placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
               />
             </div>
           </div>
@@ -178,7 +180,7 @@ function MPSelector({
               <button
                 key={m.id}
                 onClick={() => { onChange(m.id); setOpen(false); setSearch(''); }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-900 text-left transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-card text-left transition-colors"
               >
                 <img src={m.image_url} alt={m.name} className="w-6 h-6 rounded-full object-cover shrink-0" />
                 <div className="min-w-0 flex-1">
@@ -200,6 +202,7 @@ function MPSelector({
 
 // ── Winner Banner ─────────────────────────────────────────────────────────────
 function WinnerBanner({ mpA, mpB }: { mpA: MP; mpB: MP }) {
+  const { t } = useLanguage();
   const scores = [
     mpA.overall_score > mpB.overall_score ? 'A' : mpA.overall_score < mpB.overall_score ? 'B' : 'tie',
     mpA.attendance_rate > mpB.attendance_rate ? 'A' : mpA.attendance_rate < mpB.attendance_rate ? 'B' : 'tie',
@@ -237,13 +240,13 @@ function WinnerBanner({ mpA, mpB }: { mpA: MP; mpB: MP }) {
       {overall === 'tie' ? (
         <div className="relative z-10 space-y-2">
           <div className="text-4xl">🤝</div>
-          <p className="text-xl font-black text-amber-400">IT'S A TIE!</p>
-          <p className="text-xs text-muted-foreground">Both MPs are perfectly matched across all metrics</p>
+          <p className="text-xl font-black text-amber-400">{t.itsATie}</p>
+          <p className="text-xs text-muted-foreground">{t.bothMpsMatched}</p>
         </div>
       ) : (
         <div className="relative z-10 space-y-3">
           <Trophy className="h-8 w-8 text-yellow-400 mx-auto" />
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Winner</p>
+          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">{t.winner}</p>
           <div className="flex items-center justify-center gap-3">
             <img src={winner!.image_url} alt={winner!.name} className="w-12 h-12 rounded-full border-2 border-yellow-400" />
             <div className="text-left">
@@ -253,7 +256,7 @@ function WinnerBanner({ mpA, mpB }: { mpA: MP; mpB: MP }) {
           </div>
           <div className="flex items-center justify-center gap-6 text-sm">
             <span className="text-indigo-400 font-black">{winsA} wins</span>
-            <span className="text-muted-foreground">vs</span>
+            <span className="text-muted-foreground">{t.vs}</span>
             <span className="text-rose-400 font-black">{winsB} wins</span>
           </div>
         </div>
@@ -264,6 +267,7 @@ function WinnerBanner({ mpA, mpB }: { mpA: MP; mpB: MP }) {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ComparePage() {
+  const { t } = useLanguage();
   const [allMps, setAllMps] = useState<MP[]>([]);
   const [loading, setLoading] = useState(true);
   const [idA, setIdA] = useState('');
@@ -284,7 +288,7 @@ export default function ComparePage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[500px]">
         <div className="w-12 h-12 rounded-full border-4 border-indigo-600/20 border-t-indigo-500 animate-spin" />
-        <span className="mt-4 text-sm text-muted-foreground font-medium">Loading battle arena...</span>
+        <span className="mt-4 text-sm text-muted-foreground font-medium">{t.loadingBattleArena}</span>
       </div>
     );
   }
@@ -317,10 +321,10 @@ export default function ComparePage() {
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
           <Swords className="h-7 w-7 text-indigo-400" />
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">MP Battle Arena</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t.mpBattleArena}</h1>
           <Swords className="h-7 w-7 text-rose-400 scale-x-[-1]" />
         </div>
-        <p className="text-muted-foreground text-sm">Pick two MPs. See who wins across every metric. May the best parliamentarian win.</p>
+        <p className="text-muted-foreground text-sm">{t.pickTwoMps}</p>
       </div>
 
       {/* VS Selector — up to 5 MPs */}
@@ -358,7 +362,7 @@ export default function ComparePage() {
                 <div className="w-2 h-2 rounded-full bg-indigo-400" />
                 <span className="text-xs font-bold text-foreground truncate max-w-[120px]">{mpA!.name}</span>
               </div>
-              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Head to Head</h2>
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{t.headToHead}</h2>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-foreground truncate max-w-[120px] text-right">{mpB!.name}</span>
                 <div className="w-2 h-2 rounded-full bg-rose-400" />
@@ -397,7 +401,7 @@ export default function ComparePage() {
                         {t}
                       </span>
                     ))}
-             {(!mp.top_topics || mp.top_topics.length === 0) && <span className="text-[10px] text-muted-foreground">No focus data</span>}
+             {(!mp.top_topics || mp.top_topics.length === 0) && <span className="text-[10px] text-muted-foreground">{t.noFocusData}</span>}
                   </div>
                 </div>
               ))}
