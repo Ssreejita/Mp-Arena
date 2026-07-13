@@ -14,6 +14,7 @@ import {
 import { db, MP } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 
+
 interface AggregatedInsights {
   avgAttendance: number;
   avgScore: number;

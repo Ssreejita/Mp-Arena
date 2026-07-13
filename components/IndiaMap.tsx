@@ -98,7 +98,7 @@ const handleSelectChange = (stateName: string) => {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, "-")
     .toLowerCase();
-  router.push(`/states/${slug}`);
+  
 };
 
 return (
@@ -161,16 +161,8 @@ console.log(stateName, svgPath);
               onMouseEnter={() => setHoveredState(stateName)}
               onMouseLeave={() => setHoveredState(null)}
               onClick={() => {
-                onStateClick?.(stateName);
-
-                const slug = stateName
-                  .normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .replace(/\s+/g, "-")
-                  .toLowerCase();
-
-                router.push(`/states/${slug}`);
-              }}
+  onStateClick?.(stateName);
+}}
             />
           );
         })}

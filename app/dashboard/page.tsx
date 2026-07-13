@@ -8,7 +8,55 @@ import IndiaMap from '@/components/IndiaMap';
 import { LogOut, MapPin, Users, Clock, MessageSquare, FileText, ChevronRight } from 'lucide-react';
 import { db, MP } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+import ParliamentActivityCalendar from '@/components/ParliamentActivityCalendar';
+function ComparisonBar({ label, stateVal, nationalVal, unit = '' }: { label: string; stateVal: number; nationalVal: number; unit?: string }) {
+  const diff = nationalVal > 0 ? ((stateVal - nationalVal) / nationalVal) * 100 : 0;
+  const clamped = Math.max(-50, Math.min(50, diff));
+  const dotPosition = 50 + clamped;
+  const higher = diff >= 0;
 
+  return (
+    <div className="space-y-2">
+      <p className="text-xs">
+        <span className={cn('font-bold', higher ? 'text-emerald-400' : 'text-rose-400')}>
+          {Math.abs(diff).toFixed(0)}% {higher ? 'Higher' : 'Lower'}
+        </span>{' '}
+        <span className="text-muted-foreground">than national average — {label}</span>
+      </p>
+      <div className="relative h-1.5 bg-border rounded-full">
+        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-muted-foreground/40" />
+        <div
+          className={cn('absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-background', higher ? 'bg-emerald-400' : 'bg-rose-400')}
+          style={{ left: `${dotPosition}%`, transform: 'translate(-50%, -50%)' }}
+        />
+      </div>
+      <div className="flex justify-between text-[9px] text-muted-foreground uppercase tracking-widest">
+        <span>Lower</span>
+        <span>National Avg</span>
+        <span>Higher</span>
+      </div>
+    </div>
+  );
+}
+
+
+function BenchmarkPanel({
+  stateName,
+}: {
+  stateName: string;
+  stateAttendance: number;
+  nationalAttendance: number;
+  stateAvgQuestions: number;
+  nationalAvgQuestions: number;
+  stateAvgBills: number;
+  nationalAvgBills: number;
+}) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-6">
+      <ParliamentActivityCalendar stateName={stateName} />
+    </div>
+  );
+}
 interface CitizenData {
   name: string;
   age: string;
@@ -17,7 +65,11 @@ interface CitizenData {
   constituency: string;
   loggedIn: boolean;
 }
-
+interface NationalInsights {
+  avgAttendance: number;
+  totalQuestions: number;
+  totalBills: number;
+}
 export default function DashboardPage() {
   const { t } = useLanguage();
   const router = useRouter();
@@ -26,35 +78,53 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
  const [selectedState, setSelectedState] = useState<string | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('loklens_citizen');
-    if (!stored) {
-      router.push('/login');
-      return;
-    }
-    const data = JSON.parse(stored) as CitizenData;
-    if (!data.loggedIn) {
-      router.push('/login');
-      return;
-    }
-    setCitizen(data);
-    setSelectedState(data.state);
-  }, [router]);
-
+  
+useEffect(() => {
+    setSelectedState('Uttar Pradesh'); // sensible default; user can pick another state via the map
+  }, []);
+ 
   useEffect(() => {
     if (!selectedState) return;
     setLoading(true);
     db.getMps().then(all => {
       console.log('selectedState:', selectedState);
    console.log('sample mp.state values:', [...new Set(all.map(mp => mp.state))]);
-      const filtered = all.filter(mp =>
-       mp.state && mp.state.toLowerCase() === selectedState.toLowerCase()
-      );
+      const normalizeState = (state: string) => {
+  const value = state.toLowerCase().trim();
+
+  const aliases: Record<string, string> = {
+    "orissa": "odisha",
+
+    "pondicherry": "puducherry",
+
+    "j&k": "jammu and kashmir",
+    "jammu & kashmir": "jammu and kashmir",
+    "jammu kashmir": "jammu and kashmir",
+  };
+
+  return aliases[value] || value;
+};
+
+
+const filtered = all.filter(mp =>
+  mp.state &&
+  normalizeState(mp.state) === normalizeState(selectedState)
+);
       setStateMps(filtered);
       setLoading(false);
     });
   }, [selectedState]);
+  const [national, setNational] = useState<NationalInsights | null>(null);
+
+  useEffect(() => {
+    db.getAggregatedInsights().then((data: any) => {
+      setNational({
+        avgAttendance: data.avgAttendance,
+        totalQuestions: data.totalQuestions,
+        totalBills: data.totalBills,
+      });
+    });
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('loklens_citizen');
@@ -76,7 +146,7 @@ export default function DashboardPage() {
   });
   const parties = Object.entries(partyMap).sort((a, b) => b[1] - a[1]);
 
-  if (!citizen) return null;
+ 
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,18 +158,8 @@ export default function DashboardPage() {
   style={{ filter: 'brightness(0) invert(1)' }}></img>
           <span className="font-black text-lg text-foreground">Lok<span className="text-indigo-500">Lens</span></span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-foreground">{citizen.name}</p>
-            <p className="text-[10px] text-muted-foreground">{citizen.state}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-rose-400 hover:border-rose-500/30 transition-colors"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Logout
-          </button>
+       <div className="flex items-center gap-4">
+          <p className="text-xs text-muted-foreground">Explore Parliamentary Data</p>
         </div>
       </div>
 
@@ -107,9 +167,9 @@ export default function DashboardPage() {
 
         {/* Welcome */}
         <div className="rounded-2xl border border-border bg-card p-6">
-          <p className="text-xs text-indigo-400 font-bold uppercase tracking-widest mb-1">{t.welcomeBack}</p>
+          <p className="text-xs text-indigo-400 font-bold uppercase tracking-widest mb-1">{t.parliamentSnapshot}</p>
           <h1 className="text-2xl font-black text-foreground">
-            {citizen.name}, <span className="text-muted-foreground font-normal text-lg">{t.parliamentSnapshot}</span>
+            Explore MPs by State
           </h1>
           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5" />
@@ -180,26 +240,17 @@ export default function DashboardPage() {
           {/* Right — Top MP + MP list */}
           <div className="lg:col-span-2 space-y-4">
 
-            {/* Top performer */}
-            {!loading && topMp && (
-              <Link href={`/mps/${topMp.id}`} className="block bg-card border border-indigo-500/20 rounded-xl p-5 hover:border-indigo-500/50 transition-colors">
-                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3">🏆 Top Performer in {selectedState}</p>
-                <div className="flex items-center gap-4">
-                  <img src={topMp.image_url} alt={topMp.name} className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500/30" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-black text-foreground text-lg">{topMp.name}</p>
-                    <p className="text-sm text-muted-foreground">{topMp.party} · {topMp.constituency}</p>
-                    <div className="flex gap-4 mt-2">
-                      <span className="text-xs text-emerald-400 font-bold">Attendance: {topMp.attendance_rate}%</span>
-                      <span className="text-xs text-violet-400 font-bold">Questions: {topMp.questions_count}</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-3xl font-black text-indigo-400">{topMp.overall_score}</p>
-                    <p className="text-[9px] text-muted-foreground">score</p>
-                  </div>
-                </div>
-              </Link>
+           {/* Benchmark Panel */}
+            {!loading && national && (
+              <BenchmarkPanel
+                stateName={selectedState ?? ''}
+                stateAttendance={Number(avgAttendance)}
+                nationalAttendance={national.avgAttendance}
+                stateAvgQuestions={stateMps.length ? totalQuestions / stateMps.length : 0}
+                nationalAvgQuestions={national.totalQuestions / 544}
+                stateAvgBills={stateMps.length ? totalBills / stateMps.length : 0}
+                nationalAvgBills={national.totalBills / 544}
+              />
             )}
 
             {/* MP list */}
@@ -242,12 +293,18 @@ export default function DashboardPage() {
             )}
 
             {/* Go to full app */}
-            <Link
-              href="/"
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-sm font-bold transition-colors"
-            >
-              Explore Full Parliament Dashboard <ChevronRight className="h-4 w-4" />
-            </Link>
+          {selectedState && (
+  <Link
+    href={`/states/${
+      selectedState === "Odisha"
+        ? "orissa"
+        : selectedState.toLowerCase().replace(/\s+/g, "-")
+    }`}
+    className="mt-6 flex items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-4 transition-colors"
+  >
+    View Complete {selectedState} Analysis →
+  </Link>
+)}
           </div>
         </div>
       </div>

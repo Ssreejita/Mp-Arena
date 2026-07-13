@@ -100,6 +100,16 @@ export interface MPDebate {
   video_url?: string;
   prs_url?: string;
 }
+export interface StateActivity {
+  id: string;
+  state: string;
+  activity_date: string;
+  questions: number;
+  debates: number;
+  bills: number;
+  attendance: number;
+  activity_score: number;
+}
 
 // Environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -154,6 +164,28 @@ export const db = {
   /**
    * Get list of all MPs with search and filter options
    */
+  async getStateActivity(state: string): Promise<StateActivity[]> {
+  if (!supabase) return [];
+
+  const dbState =
+    state === "Orissa"
+      ? "Odisha"
+      : state;
+
+  const { data, error } = await supabase
+    .from("state_activity")
+    .select("*")
+    .eq("state", dbState)
+    .order("activity_date", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data as StateActivity[];
+},
+
   async getMps(filters?: {
     search?: string;
     party?: string;
@@ -175,8 +207,23 @@ export const db = {
           query = query.ilike('party', `%${filters.party}%`);
         }
         if (filters?.region && filters.region !== 'All') {
-          query = query.ilike('region', `%${filters.region}%`);
-        }
+
+  const regionAliases: Record<string, string[]> = {
+    Odisha: ['Odisha', 'Orissa'],
+    Puducherry: ['Puducherry', 'Pondicherry'],
+    'Jammu and Kashmir': [
+      'Jammu and Kashmir',
+      'Jammu & Kashmir',
+      'J&K',
+      'Jammu Kashmir'
+    ],
+  };
+
+  const regions =
+    regionAliases[filters.region] || [filters.region];
+
+  query = query.in('region', regions);
+}
         if (filters?.status && filters.status !== 'All') {
           query = query.eq('status', filters.status);
         }
@@ -223,7 +270,19 @@ if (!error && data) {
     }
 
     if (filters?.region && filters.region !== 'All') {
-      result = result.filter(mp => mp.region === filters.region);
+      const regionAliases: Record<string, string[]> = {
+        Odisha: ['Odisha', 'Orissa'],
+        Puducherry: ['Puducherry', 'Pondicherry'],
+        'Jammu and Kashmir': [
+          'Jammu and Kashmir',
+          'Jammu & Kashmir',
+          'J&K',
+          'Jammu Kashmir'
+        ],
+      };
+
+      const regions = regionAliases[filters.region] || [filters.region];
+      result = result.filter(mp => regions.includes(mp.region));
     }
 
     if (filters?.status && filters.status !== 'All') {

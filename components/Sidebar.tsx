@@ -1,5 +1,5 @@
 'use client';
-import { getCitizen } from '@/lib/auth';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -33,12 +33,7 @@ export default function Sidebar({ className }: SidebarProps) {
   const [searchResults, setSearchResults] = useState<MP[]>([]);
   const [allMps, setAllMps] = useState<MP[]>([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-const [citizen, setCitizen] = useState<{ name: string; state: string } | null>(null);
-const { language, setLanguage, t } = useLanguage();
-useEffect(() => {
-  const data = getCitizen();
-  if (data) setCitizen(data);
-}, []);
+const { t } = useLanguage();
   // Load all MPs for quick search filtering
   useEffect(() => {
     async function loadMps() {
@@ -213,14 +208,14 @@ useEffect(() => {
         </nav>
 
         {/* Footer Area */}
-        <div className="p-4 border-t border-border bg-muted/30">
+       <div className="p-4 border-t border-border bg-muted/30">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-xs text-white shadow-md">
               MP
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-zinc-300 truncate">{citizen?.name ?? 'Parliament Session'}</p>
-<p className="text-[10px] text-zinc-500 truncate">{citizen?.state ?? 'Data Feed: Live Mocks'}</p>
+              <p className="text-xs font-semibold text-foreground truncate">Parliament Session</p>
+              <p className="text-[10px] text-muted-foreground truncate">Data Feed: Live Mocks</p>
             </div>
           </div>
         </div>

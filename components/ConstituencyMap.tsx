@@ -43,6 +43,19 @@ function normalize(str: string): string {
   return str.toLowerCase().trim().replace(/\s+/g, " ");
 }
 
+// Some GeoJSON datasets still use pre-2011 state names
+const REVERSE_STATE_ALIASES: Record<string, string> = {
+  odisha: "orissa",
+  puducherry: "pondicherry",
+  uttarakhand: "uttaranchal",
+};
+
+function getMatchNames(stateName: string): string[] {
+  const norm = normalize(stateName);
+  const alias = REVERSE_STATE_ALIASES[norm];
+  return alias ? [norm, alias] : [norm];
+}
+
 interface ConstituencyMapProps {
   stateName: string;
   mps: MpWithTier[];
@@ -70,8 +83,9 @@ export default function ConstituencyMap({ stateName, mps, className = "" }: Cons
 
   const stateFeatures = useMemo(() => {
     if (!geoData) return [];
+    const matchNames = getMatchNames(stateName);
     return geoData.features.filter(
-      (f) => f.properties?.st_name && normalize(f.properties.st_name) === normalize(stateName)
+      (f) => f.properties?.st_name && matchNames.includes(normalize(f.properties.st_name))
     );
   }, [geoData, stateName]);
 

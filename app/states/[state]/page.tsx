@@ -135,12 +135,12 @@ export default function StatePage({
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-16">
       <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-indigo-400 transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Link>
+  href="/dashboard"
+  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-indigo-400 transition-colors"
+>
+  <ArrowLeft className="h-4 w-4" />
+  Back
+</Link>
 
       {/* ===== TOP: Header ===== */}
       <div className="rounded-2xl border border-border bg-card p-8">
