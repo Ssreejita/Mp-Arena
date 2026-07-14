@@ -9,6 +9,7 @@ import { LogOut, MapPin, Users, Clock, MessageSquare, FileText, ChevronRight } f
 import { db, MP } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import ParliamentActivityCalendar from '@/components/ParliamentActivityCalendar';
+import Sidebar from "@/components/Sidebar";
 function ComparisonBar({ label, stateVal, nationalVal, unit = '' }: { label: string; stateVal: number; nationalVal: number; unit?: string }) {
   const diff = nationalVal > 0 ? ((stateVal - nationalVal) / nationalVal) * 100 : 0;
   const clamped = Math.max(-50, Math.min(50, diff));
@@ -126,10 +127,7 @@ const filtered = all.filter(mp =>
     });
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('loklens_citizen');
-    router.push('/login');
-  };
+ 
 
   const avgAttendance = stateMps.length
     ? (stateMps.reduce((s, m) => s + m.attendance_rate, 0) / stateMps.length).toFixed(1)
@@ -147,9 +145,11 @@ const filtered = all.filter(mp =>
   const parties = Object.entries(partyMap).sort((a, b) => b[1] - a[1]);
 
  
+return (
+  <div className="flex min-h-screen bg-background">
+    <Sidebar />
 
-  return (
-    <div className="min-h-screen bg-background">
+    <main className="flex-1 overflow-auto">
 
       {/* Top nav */}
       <div className="border-b border-border bg-card px-6 py-4 flex items-center justify-between">
@@ -308,6 +308,7 @@ const filtered = all.filter(mp =>
           </div>
         </div>
       </div>
+      </main>
     </div>
   );
 }

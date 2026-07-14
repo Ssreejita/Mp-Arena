@@ -33,10 +33,8 @@ function getIntensity(score: number) {
   return 'bg-emerald-500';
 }
 
-const MONTHS = [
-  'jan','feb','mar','apr','may','jun',
-  'jul','aug','sep','oct','nov','dec'
-];
+
+
 
 const WEEKDAYS = [
   'Mon','Tue','Wed','Thu','Fri','Sat','Sun'
@@ -85,6 +83,34 @@ export default function ParliamentActivityCalendar({
 
   const start = new Date('2024-07-01');
   const end = new Date('2026-07-13');
+  const monthHeaders: { label: string; week: number }[] = [];
+const yearHeaders: { label: string; week: number }[] = [];
+
+let weekIndex = 0;
+let lastMonth = -1;
+let lastYear = -1;
+
+for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+  if (d.getDay() === 1) { // Monday = start of a new week
+    if (d.getMonth() !== lastMonth) {
+      monthHeaders.push({
+        label: d.toLocaleString("default", { month: "short" }),
+        week: weekIndex,
+      });
+      lastMonth = d.getMonth();
+    }
+
+    if (d.getFullYear() !== lastYear) {
+      yearHeaders.push({
+        label: d.getFullYear().toString(),
+        week: weekIndex,
+      });
+      lastYear = d.getFullYear();
+    }
+
+    weekIndex++;
+  }
+}
 
   const map = new Map(
     activity.map((a) => [a.activity_date, a])
@@ -152,18 +178,35 @@ export default function ParliamentActivityCalendar({
           <div className="inline-block min-w-max">
 
 
-            <div className="grid grid-cols-12 mb-3 text-[10px] sm:text-xs text-muted-foreground gap-x-1">
+           {/* Years */}
+<div className="relative h-5 mb-1">
+  {yearHeaders.map((year) => (
+    <span
+      key={year.label}
+      className="absolute text-xs sm:text-sm font-bold text-foreground"
+      style={{
+        left: `${year.week * 16}px`,
+      }}
+    >
+      {year.label}
+    </span>
+  ))}
+</div>
 
-              {MONTHS.map(month => (
-                <div
-                  key={month}
-                  className="min-w-[28px] sm:min-w-[36px]"
-                >
-                  {month}
-                </div>
-              ))}
-
-            </div>
+{/* Months */}
+<div className="relative h-4 mb-3">
+  {monthHeaders.map((month, i) => (
+    <span
+      key={i}
+      className="absolute text-[10px] sm:text-xs text-muted-foreground"
+      style={{
+        left: `${month.week * 16}px`,
+      }}
+    >
+      {month.label}
+    </span>
+  ))}
+</div>
 
 
             <div className="flex gap-[2px] sm:gap-[3px]">

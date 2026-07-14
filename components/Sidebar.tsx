@@ -128,7 +128,15 @@ const { t } = useLanguage();
            MP Tracker
           </span>
         </div>
+
 {/* Language Selector */}
+<div className="px-4 py-4 border-b border-border">
+  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+    Language
+  </p>
+
+  <GoogleTranslate />
+</div>
 
 
         {/* Global Search */}
@@ -220,10 +228,7 @@ const { t } = useLanguage();
           </div>
         </div>
       </aside>
-      {/* Google Translate Widget */}
-<div className="px-4 pt-2">
-  <GoogleTranslate />
-</div>
+      
     </>
   );
 }
